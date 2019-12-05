@@ -2,12 +2,27 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
 public class World {
 	
+	private static World worldInstance = null;
+	
+	public static World getInstance(){
+		return worldInstance;
+	}
+	
+	public static void createInstance(String mapFileLocation) throws TrumanDiedException {
+		if(worldInstance == null){
+			worldInstance = new World(mapFileLocation);
+		}
+	}
+	
 	int width, height;
+	
+	private Random random = new Random();
 	
 	int[][] map = null;
 	private HashMap<Point, Integer> berries;
@@ -18,43 +33,175 @@ public class World {
 	
 	static final int APPLE_HUNGER_VALUE = 3;
 	static final int BERRY_HUNGER_VALUE = 1;
+	static final int WATER_THIRST_VALUE = 2;
 	
+	static final int SNAKE_BITE_VALUE = 50;
+	
+	static final int ABYSS = -1;
 	static final int GRASS = 0;
 	static final int APPLE_TREE = 1;
 	static final int BUSH = 2;
 	static final int ROCK = 3;
+	static final int SNAKE = 4;
+	static final int WATER = 5;
 	
 	public World(String mapFileLocation) throws TrumanDiedException {
-		importMap(mapFileLocation);
-		if(map == null)
-			throw new TrumanDiedException("Could not create a world for Truman to live in..."); //TODO modify to throw an exception to kill the game
+		boolean imported = importMap(mapFileLocation);
+		if(map == null || !imported)
+			throw new TrumanDiedException("Could not create a world for Truman to live in...");
 	}
 	
 	private Point toPoint(int x, int y){
 		return new Point(x,y);
 	}
 	
-	public int pickBerries(int x, int y){
-		if(map[x][y] != BUSH)
-			return 0;
-		
-		int berriesOnBush = berries.get(toPoint(x,y));
-		Random r = new Random();
-		int berriesPicked = r.nextInt()%berriesOnBush;
-		berries.put(toPoint(x,y), berriesOnBush - berriesPicked);
-		return berriesPicked;
+	public int pickBerries(int trux, int truy) {
+		if(map[trux][truy] == BUSH) {
+			int berriesOnBush = berries.get(toPoint(trux,truy));
+			int berriesPicked = Math.abs(random.nextInt()%berriesOnBush);
+			if(berriesOnBush > 0 && berriesPicked == 0) berriesPicked = 1;
+			berries.put(toPoint(trux,truy), berriesOnBush - berriesPicked);
+			return berriesPicked;
+		}
+		for(int x = -1; x <= 1; x++){
+			int xmod = x + trux;
+			if(xmod < width && xmod > -1) {
+				for(int y = -1; y <= 1; y++) {
+					int ymod = y + truy;
+					if(ymod < height && ymod > -1) {
+						if(map[xmod][ymod] == BUSH){
+							int berriesOnBush = berries.get(toPoint(xmod,ymod));
+							int berriesPicked = Math.abs(random.nextInt()%berriesOnBush);
+							if(berriesOnBush > 0 && berriesPicked == 0) berriesPicked = 1;
+							berries.put(toPoint(xmod,ymod), berriesOnBush - berriesPicked);
+							return berriesPicked;
+						}
+					}
+				}
+			}
+		}
+		return 0;
 	}
 	
-	public void grow(){
+	public int pickApples(int trux, int truy){
+		if(map[trux][truy] == APPLE_TREE) {
+			int applesOnTree = apples.get(toPoint(trux,truy));
+			if(applesOnTree > 0) {
+				apples.put(toPoint(trux, truy), applesOnTree - 1);
+				return 1;
+			}
+		}
+		for(int x = -1; x <= 1; x++){
+			int xmod = x + trux;
+			if(xmod < width && xmod > -1) {
+				for(int y = -1; y <= 1; y++) {
+					int ymod = y + truy;
+					if(ymod < height && ymod > -1) {
+						if(map[xmod][ymod] == APPLE_TREE){
+							int applesOnTree = apples.get(toPoint(xmod,ymod));
+							if(applesOnTree > 0) {
+								apples.put(toPoint(xmod, ymod), applesOnTree - 1);
+								return 1;
+							}
+						}
+					}
+				}
+			}
+		}
+		return 0;
+	}
+	
+	public int collectWater(int trux, int truy) {
+		if(map[trux][truy] == WATER)
+			return 1;
+		for(int x = -1; x <= 1; x++){
+			int xmod = x + trux;
+			if(xmod < width && xmod > -1) {
+				for(int y = -1; y <= 1; y++) {
+					int ymod = y + truy;
+					if(ymod < height && ymod > -1) {
+						if(map[xmod][ymod] == WATER){
+							return 1;
+						}
+					}
+				}
+			}
+		}
+		return 0;
+	}
+	
+	private void grow(){
+		//System.out.println("The fruit has grown!");
 		berries.replaceAll((p, v) -> v + 1);
 		apples.replaceAll((p, v) -> v + 1);
+	}
+	
+	public void update(Truman truman) throws TrumanDiedException {
+		int shouldGrow = Math.abs(random.nextInt()%100);
+		if(shouldGrow < 66){
+			grow();
+		}
+		if(isNearSnake(truman)){
+			int biteChance = Math.abs(random.nextInt()%100);
+			if(biteChance > 50){
+				truman.snakeBite();
+			}
+		}
+		//TODO move snakes
+		truman.addViewToMemory(getCurrentView(truman.getX(), truman.getY(), truman.getViewRadius()));
+	}
+	
+	private boolean isNearSnake(Truman truman){
+		if(map[truman.getX()][truman.getY()] == SNAKE){
+			return true;
+		}
+		for(int x = -1; x <= 1; x++){
+			int xmod = x + truman.getX();
+			if(xmod < width && xmod > -1) {
+				for(int y = -1; y <= 1; y++) {
+					int ymod = y + truman.getY();
+					if(ymod < height && ymod > -1) {
+						if(map[xmod][ymod] == SNAKE){
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	private int[][] getCurrentView(int x, int y, int radius) {
+		int[][] currentView = new int[width][height];
+		
+		// need to initialize array with ABYSS value so truman doesn't think everything is grass.
+		for(int[] ints : currentView) {
+			Arrays.fill(ints, ABYSS);
+		}
+		
+		currentView[x][y] = map[x][y];
+		for(int r = -radius; r <= radius; r++){
+			//TODO this makes a square and not a circle...
+			int xmod = x+r;
+			int ymod = y+r;
+			if(xmod < width && xmod > -1) {
+				currentView[xmod][y] = map[xmod][y];
+			}
+			if(ymod < height && ymod > -1) {
+				currentView[x][ymod] = map[x][ymod];
+			}
+			if(xmod < width && xmod > -1) {
+				if(ymod < height && ymod > -1) {
+					currentView[xmod][ymod] = map[xmod][ymod];
+				}
+			}
+		}
+		return currentView;
 	}
 	
 	
 	
 	private boolean importMap(String mapFileName){
-		//TODO get width,height from file
-		//TODO read in map
 		try {
 			FileReader fileReader = new FileReader("./maps/" + mapFileName);
 			BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -76,11 +223,16 @@ public class World {
 					} else if(line.charAt(x) == '@'){ // Apple Tree
 						map[x][y] = APPLE_TREE;
 						apples.put(toPoint(x,y), MAX_APPLES_ON_TREE);
-					}else if(line.charAt(x) == '*'){ // Bush
+					} else if(line.charAt(x) == '*'){ // Bush
 						map[x][y] = BUSH;
 						berries.put(toPoint(x,y), MAX_BERRIES_ON_BUSH);
-					}else if (line.charAt(x) == '#') // Rock/Wall
+					} else if (line.charAt(x) == '#') { // Rock/Wall
 						map[x][y] = ROCK;
+					} else if (line.charAt(x) == 's') { // Snake
+						map[x][y] = SNAKE;
+					} else if (line.charAt(x) == 'w') { // Water
+						map[x][y] = WATER;
+					}
 				}
 			}
 			
@@ -89,7 +241,8 @@ public class World {
 		}
 		catch(IOException e) {
 			e.printStackTrace();
+			return false;
 		}
-		return false;
+		return true;
 	}
 }

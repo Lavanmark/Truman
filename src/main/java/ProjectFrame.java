@@ -5,13 +5,9 @@ public class ProjectFrame extends JFrame {
 	Color bkgroundColor = new Color(255, 255, 255);
 	
 	private WorldComponent myWorldComponent;
-	private World world;
 	private Truman truman;
 	
-	public ProjectFrame(World world) throws TrumanDiedException {
-		this.world = world;
-		
-		
+	public ProjectFrame(int actionDelay) throws TrumanDiedException {
 		// set up the GUI that displays the information you compute
 		int width = 500;
 		int height = 500;
@@ -20,19 +16,37 @@ public class ProjectFrame extends JFrame {
 		getContentPane().setBackground(bkgroundColor);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, width, height + bar);
-		myWorldComponent = new WorldComponent(world, width, height);
+		truman = new Truman(World.getInstance().width, World.getInstance().height);
+		myWorldComponent = new WorldComponent(width, height, truman);
 		getContentPane().add(myWorldComponent);
-		truman = new Truman(world.height, world.width);
+		
 		
 		setVisible(true);
 		setTitle("The Truman Project");
 		
-		doStuff();
+		doStuff(actionDelay);
 	}
 	
-	private void doStuff() throws TrumanDiedException {
-		while(true){
-			//truman.update();
+	private void doStuff(int actionDelay) {
+		int steps = 0;
+		try {
+			while(true) {
+				steps++;
+				try {
+					Thread.sleep(actionDelay);
+				} catch(InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+				World.getInstance().update(truman);
+				truman.makeDecision();
+				truman.update();
+				myWorldComponent.setStepNumber(steps);
+				myWorldComponent.repaint();
+				truman.expressThoughts();
+			}
+		} catch(TrumanDiedException e){
+			e.printStackTrace();
+			myWorldComponent.setDead(e.getMessage());
 			myWorldComponent.repaint();
 		}
 	}

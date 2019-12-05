@@ -8,18 +8,19 @@ public class WorldComponent extends JComponent {
 	private Color grey = new Color(170, 170, 170);
 	private Color myWhite = new Color(220, 220, 220);
 	
-	private World world;
+	private Truman trumanPointer;
 	
 	private int gameState = 0; //Alive = 0, Dead = 1
 	
-	public WorldComponent(World world, int windowWidth, int windowHeight){
-		this.world = world;
-		
+	private int timeSteps = 0;
+	
+	public WorldComponent( int windowWidth, int windowHeight, Truman truman){
+		trumanPointer = truman;
 		winWidth = windowWidth;
 		winHeight = windowHeight;
 		
-		sqrWdth = (double) windowWidth / world.width;
-		sqrHght = (double) windowHeight / world.height;
+		sqrWdth = (double) windowWidth / World.getInstance().width;
+		sqrHght = (double) windowHeight / World.getInstance().height;
 	}
 	
 	
@@ -29,23 +30,29 @@ public class WorldComponent extends JComponent {
 		requestFocus();
 	}
 	
+	public void setStepNumber(int number){
+		timeSteps = number;
+	}
+	
 	public void setWin() {
 		gameState = 100;
 		repaint();
 	}
 	
-	public void setLoss() {
+	private String causeOfDeath = null;
+	
+	public void setDead(String reason) {
+		causeOfDeath = reason;
 		gameState = 1;
 		repaint();
 	}
-	
-	
 	
 	public void paint(Graphics g) {
 		paintWorld(g);
 	}
 	
 	private void paintWorld(Graphics g) {
+		World world = World.getInstance();
 		int mx = 0, my = 0;
 		
 		// for (int y = world.height - 1; y > -1; y--) {
@@ -65,9 +72,14 @@ public class WorldComponent extends JComponent {
 					g.setColor(Color.WHITE);
 					g.fillRect((int) (x * sqrWdth), (int) (((world.height-1) - y) * sqrHght), (int) sqrWdth, (int) sqrHght);
 				}
-				
-				
-				
+				else if (world.map[x][y] == World.SNAKE) {
+					g.setColor(Color.PINK);
+					g.fillRect((int) (x * sqrWdth), (int) (((world.height-1) - y) * sqrHght), (int) sqrWdth, (int) sqrHght);
+				}
+				else if (world.map[x][y] == World.WATER) {
+					g.setColor(Color.CYAN);
+					g.fillRect((int) (x * sqrWdth), (int) (((world.height-1) - y) * sqrHght), (int) sqrWdth, (int) sqrHght);
+				}
 			}
 		}
 		for (int x = 0; x < world.width; x++) {
@@ -81,12 +93,54 @@ public class WorldComponent extends JComponent {
 		
 		// System.out.println("repaint maxProb: " + maxProbs + "; " + mx + ", " + my);
 		
-		g.setColor(Color.green);
-		g.drawOval((int) (mx * sqrWdth) + 1, (int) (my * sqrHght) + 1, (int) (sqrWdth - 1.4), (int) (sqrHght - 1.4));
-//
-//		if (gameStatus == 1) {
-//			g.setColor(Color.green);
-//			g.drawString("You Won!", 8, 25);
+		g.setColor(Color.BLACK);
+		g.drawOval((int) (trumanPointer.getX() * sqrWdth) + 1, (int) (((world.height-1) - trumanPointer.getY()) * sqrHght) + 1, (int) (sqrWdth - 1.4), (int) (sqrHght - 1.4));
+		
+		g.setColor(Color.BLACK);
+		g.drawString("Time Step: " + timeSteps, 400, 25);
+		
+		String actionString = "Nothing.";
+		switch(trumanPointer.getCurrentAction()){
+			case COLLECT_WATER:
+				actionString = "Collecting Water";
+				break;
+			case FORAGE:
+				actionString = "Foraging for food";
+				break;
+			case SLEEP:
+				actionString = "Sleeping...";
+				break;
+			case EXPLORE:
+				actionString = "Exploring!";
+				break;
+			case DRINK:
+				actionString = "Drinking Water";
+				break;
+			case EAT:
+				actionString = "Eating food";
+				break;
+			case WAKE_UP:
+				actionString = "Waking up!";
+				break;
+			case NO_ACTION:
+				actionString = "Doing Nothing.";
+				break;
+			case SEEKING:
+				actionString = "Seeking location...";
+				break;
+		}
+		g.setColor(Color.BLACK);
+		g.drawString(actionString, 8, 25);
+		
+		g.drawString("Health: "+ trumanPointer.getCurrentHealth(), 8,450);
+		g.drawString("Hunger: "+ trumanPointer.getCurrentHunger(), 8,465);
+		g.drawString("Thirst: "+ trumanPointer.getCurrentThirst(), 8,480);
+		g.drawString("Tiredness: "+ trumanPointer.getCurrentTiredness(), 400,480);
+		
+		if (gameState == 1) {
+			g.setColor(Color.RED);
+			g.drawString(causeOfDeath, 100, 250);
+		}
 //		} else if (gameStatus == 2) {
 //			g.setColor(Color.red);
 //			g.drawString("You're a Loser!", 8, 25);

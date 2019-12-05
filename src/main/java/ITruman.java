@@ -10,16 +10,24 @@ public interface ITruman {
 	int NO_IMPORTANCE = -25;
 	int MAX_TIREDNESS = 72; //low key "hours"
 	int NO_TIREDNESS = 0;
+	int MAX_VARIETY = 100;
+	int NO_VARIETY = 0;
+	int MIN_VARIETY_BOOST = 2;
 	double MAX_RISK = 0.6; //maximum risk Truman is willing to take
+	
+	void makeDecision();
 	
 	boolean sleep();
 	void explore();
 	void stayPut();
 	boolean forage();
-	boolean buildFire();
-	boolean cook();
 	boolean eat();
-	boolean buildShelter();
-	boolean cutDownTree();
+	boolean drink();
 	void expressThoughts();
+	void addViewToMemory(int[][] viewPortion);
+	void snakeBite() throws TrumanDiedException;
+	int getX();
+	int getY();
+	int getViewRadius();
+	boolean isSleeping();
 }
