@@ -2,11 +2,24 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ab5d4dad-1fed-470e-a3db-26458e964221" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/maps/world30x30.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/classAnalysis.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.2.1/javaCompile/javaCompile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/maps/world1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/maps/world1.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/ITruman.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/ITruman.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/Truman$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/Truman$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/Truman.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/Truman.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/TrumanProject.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/TrumanProject.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/World.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/World.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/WorldComponent$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/WorldComponent$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/WorldComponent.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/WorldComponent.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/maps/world1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/maps/world10x10.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/ITruman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ITruman.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ProjectFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ProjectFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Truman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Truman.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/TrumanProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/TrumanProject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/World.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/World.java" afterDir="false" />

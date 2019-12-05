@@ -91,13 +91,26 @@ public class WorldComponent extends JComponent {
 			g.drawLine(0, (int) (y * sqrHght), (int) winWidth, (int) (y * sqrHght));
 		}
 		
+		int[][] truMemory = trumanPointer.getCurrentMemory();
+		for(int y = 0; y < world.height; y++){
+			for (int x = 0; x < world.width; x++) {
+				
+				if(truMemory[x][y] == World.ABYSS){
+					int tlx = (int)(x * sqrWdth);
+					int tly = (int) (((world.height-1) - y) * sqrHght);
+					g.setColor(Color.BLACK);
+					g.drawLine(tlx,tly,tlx+(int)sqrWdth, tly+(int)sqrHght);
+				}
+			}
+		}
+		
 		// System.out.println("repaint maxProb: " + maxProbs + "; " + mx + ", " + my);
 		
 		g.setColor(Color.BLACK);
 		g.drawOval((int) (trumanPointer.getX() * sqrWdth) + 1, (int) (((world.height-1) - trumanPointer.getY()) * sqrHght) + 1, (int) (sqrWdth - 1.4), (int) (sqrHght - 1.4));
 		
 		g.setColor(Color.BLACK);
-		g.drawString("Time Step: " + timeSteps, 400, 25);
+		g.drawString("Time Step: " + timeSteps, 380, 25);
 		
 		String actionString = "Nothing.";
 		switch(trumanPointer.getCurrentAction()){
@@ -136,6 +149,7 @@ public class WorldComponent extends JComponent {
 		g.drawString("Hunger: "+ trumanPointer.getCurrentHunger(), 8,465);
 		g.drawString("Thirst: "+ trumanPointer.getCurrentThirst(), 8,480);
 		g.drawString("Tiredness: "+ trumanPointer.getCurrentTiredness(), 400,480);
+		g.drawString("Variety: "+ trumanPointer.getCurrentVariety(), 400,465);
 		
 		if (gameState == 1) {
 			g.setColor(Color.RED);

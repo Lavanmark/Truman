@@ -81,6 +81,20 @@ public class Truman implements ITruman{
 				currentVariety = MAX_VARIETY;
 			}
 		}
+		int knowledgeCount = 0;
+		for(int[] ints : mapMemory){
+			for(int anInt : ints){
+				if(anInt != World.ABYSS){
+					knowledgeCount++;
+				}
+			}
+		}
+		
+		if(knowledgeCount < viewRadius * viewRadius *2){
+			currentVariety -= 3;
+		}
+		
+		
 		if(currentVariety <= NO_VARIETY){
 			throw new TrumanDiedException("Truman died of boredom.");
 		}
@@ -105,9 +119,9 @@ public class Truman implements ITruman{
 				sleep(); // too tired? force him to sleep.
 				setState(Acts.SLEEP);
 			} else if(currentTiredness > MAX_TIREDNESS*.66){
-				viewRadius = 2;
+				viewRadius = 1;
 			} else if(currentTiredness > MAX_TIREDNESS*.33){
-				viewRadius = 3;
+				viewRadius = 2;
 			} else if(currentTiredness < MAX_TIREDNESS*.33){
 				viewRadius = 5;
 			}
@@ -164,10 +178,14 @@ public class Truman implements ITruman{
 	
 	private void updateHealth(){
 		if(currentHealth < MAX_HEALTH) {
-			if(currentHunger < MAX_HUNGER / 2 && currentThirst < MAX_THIRST / 2 && currentTiredness < MAX_TIREDNESS/3){
+			if(currentHunger < MAX_HUNGER / 2 &&
+					currentThirst < MAX_THIRST / 2 &&
+					currentTiredness < MAX_TIREDNESS/3){
 				currentHealth += HEALTH_REGEN;
 			}
 		}
+		if(currentHealth > MAX_HEALTH)
+			currentHealth = MAX_HEALTH;
 	}
 	
 	private boolean checkDead() {
@@ -226,6 +244,8 @@ public class Truman implements ITruman{
 		setState(Acts.EXPLORE);
 		double hungerRatio = ((double)currentHunger/(double)MAX_HUNGER);
 		double thristRatio = ((double)currentThirst/(double)MAX_THIRST);
+		
+		//TODO update this so if you can't find food and you're thirsty, you find water.
 		if(hungerRatio >= thristRatio && (currentHunger > MAX_HUNGER/2 ||
 				(((inventory[APPLE_INDEX] + inventory[BERRY_INDEX] < 1) ||
 						inventory[APPLE_INDEX]+inventory[BERRY_INDEX] < inventory[WATER_INDEX]) && currentThirst < MAX_THIRST/2))){
@@ -240,10 +260,10 @@ public class Truman implements ITruman{
 			} else {
 				setState(Acts.DRINK);
 			}
-		} else if(currentTiredness > MAX_TIREDNESS/3){
+		} else if(currentTiredness > MAX_TIREDNESS/3/2){
 			setState(Acts.SLEEP);
 		} else if(currentVariety < MAX_VARIETY/2){
-			setState(Acts.NO_ACTION);
+			setState(Acts.EXPLORE);
 		}
 	}
 	
@@ -257,6 +277,7 @@ public class Truman implements ITruman{
 		}
 		return false;
 	}
+	
 	private boolean haveSeenBush(){
 		for(int[] ints : mapMemory) {
 			for(int anInt : ints) {
@@ -267,6 +288,7 @@ public class Truman implements ITruman{
 		}
 		return false;
 	}
+	
 	private boolean haveSeenWater(){
 		for(int[] ints : mapMemory) {
 			for(int anInt : ints) {
@@ -281,11 +303,12 @@ public class Truman implements ITruman{
 	private int[] getClosestWaterLocation(){
 		int closeX = -1;
 		int closeY = -1;
-		double closeDistance = Double.MAX_VALUE;
+		double closeDistance = 10000;
 		for(int x = 0; x < mapMemory.length; x++){
 			for(int y = 0; y < mapMemory[x].length; y++){
 				if(mapMemory[x][y] == World.WATER){
-					double dist = Math.sqrt(Math.pow(x-getX(), 2) + Math.pow(y - getY(), 2));
+					//double dist = Math.sqrt(Math.pow(x-getX(), 2) + Math.pow(y - getY(), 2));
+					double dist = Math.abs(x-getX()) + Math.abs(y-getY());
 					if(Math.abs(dist) < Math.abs(closeDistance)){
 						closeX = x;
 						closeY = y;
@@ -349,6 +372,9 @@ public class Truman implements ITruman{
 	@Override
 	public boolean sleep() {
 		int sleepFor = Math.max(Math.abs(random.nextInt()%8), MIN_SLEEP); // Max 8 hours of sleep
+		if(currentTiredness >= MAX_TIREDNESS){
+			sleepFor = currentTiredness/SLEEP_VALUE;
+		}
 		
 		System.out.println("Truman to sleep for " + sleepFor + " time steps.");
 		sleepLength = sleepFor;
@@ -402,9 +428,12 @@ public class Truman implements ITruman{
 	private int goalY = -1;
 	
 	private void goToGoalLocation(){
-		if(goalX != getX()){
+		int xDist = Math.abs(goalX - getX());
+		int yDist = Math.abs(goalY - getY());
+		
+		if(xDist > 1 && goalX != getX() && xDist > yDist){
 			currentLocationX += goalX > getX() ? 1 : -1;
-		}else if(goalY != getY()){
+		}else if( yDist > 1 && goalY != getY()){
 			currentLocationY += goalY > getY() ? 1 : -1;
 		} else {
 			goalX = -1;
@@ -644,5 +673,14 @@ public class Truman implements ITruman{
 	}
 	public int getCurrentThirst(){
 		return currentThirst;
+	}
+	public int getCurrentVariety(){
+		return currentVariety;
+	}
+	public int[][] getCurrentMemory(){
+		return mapMemory;
+	}
+	public int[][] getMemoryStrength(){
+		return mapMemoryStrength;
 	}
 }

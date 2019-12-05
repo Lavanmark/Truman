@@ -1,8 +1,8 @@
 public interface ITruman {
 	int MAX_HEALTH = 100;
-	int MAX_HUNGER = 10;
+	int MAX_HUNGER = 100;
 	int NO_HUNGER = 0;
-	int MAX_THIRST = 10;
+	int MAX_THIRST = 100;
 	int NO_THIRST = 0;
 	int MAX_LOVE = 10;
 	int NO_LOVE = -10;

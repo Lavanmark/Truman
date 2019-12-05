@@ -138,7 +138,7 @@ public class World {
 	
 	public void update(Truman truman) throws TrumanDiedException {
 		int shouldGrow = Math.abs(random.nextInt()%100);
-		if(shouldGrow < 66){
+		if(shouldGrow < 33){
 			grow();
 		}
 		if(isNearSnake(truman)){
@@ -148,7 +148,9 @@ public class World {
 			}
 		}
 		//TODO move snakes
-		truman.addViewToMemory(getCurrentView(truman.getX(), truman.getY(), truman.getViewRadius()));
+		if(!truman.isSleeping()) {
+			truman.addViewToMemory(getCurrentView(truman.getX(), truman.getY(), truman.getViewRadius()));
+		}
 	}
 	
 	private boolean isNearSnake(Truman truman){
@@ -180,19 +182,21 @@ public class World {
 		}
 		
 		currentView[x][y] = map[x][y];
-		for(int r = -radius; r <= radius; r++){
-			//TODO this makes a square and not a circle...
-			int xmod = x+r;
-			int ymod = y+r;
-			if(xmod < width && xmod > -1) {
-				currentView[xmod][y] = map[xmod][y];
-			}
-			if(ymod < height && ymod > -1) {
-				currentView[x][ymod] = map[x][ymod];
-			}
-			if(xmod < width && xmod > -1) {
+		for(int rx = -radius; rx <= radius; rx++){
+			for(int ry = -radius; ry <= radius; ry++) {
+				//TODO this makes a square and not a circle...
+				int xmod = x + rx;
+				int ymod = y + ry;
+				if(xmod < width && xmod > -1) {
+					currentView[xmod][y] = map[xmod][y];
+				}
 				if(ymod < height && ymod > -1) {
-					currentView[xmod][ymod] = map[xmod][ymod];
+					currentView[x][ymod] = map[x][ymod];
+				}
+				if(xmod < width && xmod > -1) {
+					if(ymod < height && ymod > -1) {
+						currentView[xmod][ymod] = map[xmod][ymod];
+					}
 				}
 			}
 		}
