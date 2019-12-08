@@ -632,10 +632,13 @@ public abstract class Truman implements ITruman{
 	
 	@Override
 	public void addViewToMemory(int[][] worldPortion){
-		for(int x = 0; x < worldPortion.length; x++){
-			for(int y = 0; y < worldPortion[x].length; y++){
-				if(worldPortion[x][y] != World.ABYSS){
-					if(mapMemory[x][y] == worldPortion[x][y]){
+		for (int x = 0; x < worldPortion.length; x++){
+			for (int y = 0; y < worldPortion[x].length; y++){
+				if (worldPortion[x][y] != World.ABYSS){
+					if (mapMemory[x][y] == worldPortion[x][y]){
+						mapMemoryStrength[x][y]++;
+					} else if (mapMemory[x][y] == World.SNAKE || worldPortion[x][y] == World.SNAKE){
+						mapMemory[x][y] = worldPortion[x][y];
 						mapMemoryStrength[x][y]++;
 					} else {
 						mapMemory[x][y] = worldPortion[x][y];
