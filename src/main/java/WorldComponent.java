@@ -6,6 +6,8 @@ public class WorldComponent extends JComponent {
 	private int winWidth, winHeight;
 	private double sqrWdth, sqrHght;
 	private Color grey = new Color(170, 170, 170);
+
+    private boolean showValueIteration = false;
 	
 	private Truman trumanPointer;
 	
@@ -19,8 +21,6 @@ public class WorldComponent extends JComponent {
 		sqrWdth = (double) windowWidth / World.getInstance().width;
 		sqrHght = (double) windowHeight / World.getInstance().height;
 	}
-	
-	
 	
 	public void addNotify() {
 		super.addNotify();
@@ -46,9 +46,7 @@ public class WorldComponent extends JComponent {
 	
 	private void paintWorld(Graphics g) {
 		World world = World.getInstance();
-		int mx = 0, my = 0;
 		
-		// for (int y = world.height - 1; y > -1; y--) {
 		for(int y = 0; y < world.height; y++){
 			for (int x = 0; x < world.width; x++) {
 				
@@ -74,25 +72,72 @@ public class WorldComponent extends JComponent {
 					g.fillRect((int) (x * sqrWdth), (int) (((world.height-1) - y) * sqrHght), (int) sqrWdth, (int) sqrHght);
 				}
 			}
-		}
+        }
+        
 		for (int x = 0; x < world.width; x++) {
 			g.setColor(grey);
 			g.drawLine((int) (x * sqrWdth), 0, (int) (x * sqrWdth), (int) winHeight);
-		}
+        }
+        
 		for(int y = 0; y < world.height; y++) {
 			g.setColor(grey);
 			g.drawLine(0, (int) (y * sqrHght), (int) winWidth, (int) (y * sqrHght));
-		}
+        }
+
+        int[][] truMemory = trumanPointer.getCurrentMemory();
+
+        // draw value iteration heat map
+
+        if (showValueIteration) {
+            double maxVal = -99999, minVal = 99999;
+            double[][] vals = trumanPointer.getValueIterationData();
+
+            for (int y = 0; y < world.height; y++) {
+                for (int x = 0; x < world.width; x++) {
+                    if (vals[x][y] > maxVal) {
+                        maxVal = vals[x][y];
+                    }
+                    if (vals[x][y] < minVal) {
+                        minVal = vals[x][y];
+                    }
+                }
+            }
+
+            if (minVal == maxVal) {
+                maxVal = minVal + 1;
+            }
+
+            for (int y = 0; y < world.height; y++) {
+                for (int x = 0; x < world.width; x++) {
+                    if (truMemory[x][y] != World.GRASS) {
+                        continue;
+                    }
+
+                    int tlx = (int)(x * sqrWdth);
+                    int tly = (int) (((world.height-1) - y) * sqrHght);
+
+                    int col = (int) (255 * (vals[x][y] - minVal) / (maxVal - minVal));
+                    if (col > 255) {
+                        col = 255;
+                    }
+                    col /= 2; // reduce overall heat map transparency by 50%
+                    g.setColor(new Color(0, 0, 255, col));
+                    g.fillRect(tlx, tly, (int) sqrWdth, (int) sqrHght);
+                }
+            }
+        }
 		
-		int[][] truMemory = trumanPointer.getCurrentMemory();
 		for(int y = 0; y < world.height; y++){
 			for (int x = 0; x < world.width; x++) {
 				
 				if(truMemory[x][y] == World.ABYSS){
 					int tlx = (int)(x * sqrWdth);
-					int tly = (int) (((world.height-1) - y) * sqrHght);
+                    int tly = (int) (((world.height-1) - y) * sqrHght);
+
 					g.setColor(Color.BLACK);
-					g.drawLine(tlx,tly,tlx+(int)sqrWdth, tly+(int)sqrHght);
+                    g.drawLine(tlx,tly,tlx+(int)sqrWdth, tly+(int)sqrHght);
+                    // g.setColor(new Color(0, 0, 0, 200));
+                    // g.fillRect(tlx, tly, (int) sqrWdth, (int) sqrHght);
 				}
 			}
 		}
