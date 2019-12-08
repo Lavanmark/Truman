@@ -11,15 +11,14 @@ public class Truman implements ITruman{
 	private final int HEALTH_REGEN = 5;
 	
 	private int currentLove = MAX_LOVE; //TODO do something with this...
-	
 	private int currentImportance = MAX_IMPORTANCE; //TODO do something with this...
 	
 	private int currentVariety = MAX_VARIETY;
 	
 	private int[][] mapMemory; // Stores the portions of the world that Truman knows
 	private int[][] mapMemoryStrength; // Stores the strength of a particular value on the map, once it is 0, it is removed from the memory.
-	private int viewRadius = 5;
-	
+    private int viewRadius = 5;
+    
 	private final int APPLE_INDEX = 0;
 	private final int BERRY_INDEX = 1;
 	private final int WOOD_INDEX = 2;
@@ -48,14 +47,29 @@ public class Truman implements ITruman{
 	
 	public enum Acts {NO_ACTION, EAT, DRINK, SLEEP, WAKE_UP, EXPLORE, FORAGE, COLLECT_WATER, SEEKING}
 	private Acts currentAction = Acts.NO_ACTION;
-	private Acts nextAction = Acts.NO_ACTION;
-	
+    private Acts nextAction = Acts.NO_ACTION;
+    
+    private int mapSizeX = 0;
+    private int mapSizeY = 0;
+
+    // store computed value of being in each state (x, y)
+    private double[][] Vs;
 	
 	public Truman(int worldSizeX, int worldSizeY) {
 		mapMemory = new int[worldSizeX][worldSizeY];
 		mapMemoryStrength = new int[worldSizeX][worldSizeY];
 		currentLocationX = worldSizeX/2;
-		currentLocationY = worldSizeY/2;
+        currentLocationY = worldSizeY/2;
+        mapSizeX = worldSizeX;
+        mapSizeY = worldSizeY;
+        Vs = new double[worldSizeX][worldSizeY];
+
+        // INITIALIZE VALUE ARRAY
+        for (int y = 0; y < worldSizeY; y++) {
+            for (int x = 0; x < worldSizeX; x++) {
+                Vs[x][y] = 0.0;
+            }
+        }
 	}
 	
 	public void update() throws TrumanDiedException {
@@ -379,14 +393,189 @@ public class Truman implements ITruman{
 		System.out.println("Truman to sleep for " + sleepFor + " time steps.");
 		sleepLength = sleepFor;
 		return sleepLength > 0;
-	}
+    }
+
+    public double calcSpaceUtility(Move move) {
+        // currentLocationX currentLocationY
+        return 0.0;   
+    }
+
+    public void calcMovementUtilities() {
+        // if not abyss, he can see
+        // mapMemory;
+
+        // might forget so go back and revisit to keep it in memory
+        // mapMemoryStrength;
+
+        // double[][] mapUtils = new double[mapSize][mapSize];
+        return;
+    }
+
+    private double getValue(int x, int y, double priorResults) {
+        double discountValue = .95;
+
+        // TODO abyss
+        // TODO grass        
+        
+        if (mapMemory[x][y] == World.APPLE_TREE) {
+            return discountValue * World.APPLE_TREE_VALUE + priorResults;
+        }
+
+        if (mapMemory[x][y] == World.BUSH) {
+            return discountValue * World.BUSH_VALUE + priorResults;
+        }
+
+        if (mapMemory[x][y] == World.ROCK) {
+            return World.ROCK_VALUE;
+        }
+
+        if (mapMemory[x][y] == World.SNAKE) {
+            return discountValue * World.SNAKE_VALUE + priorResults;
+        }
+
+        if (mapMemory[x][y] == World.WATER) {
+            return discountValue * World.WATER_VALUE + priorResults;
+        }
+
+        return discountValue * Vs[x][y] + priorResults;
+    }
+
+    private double iterate(double priorResults, int lastX, int lastY) {
+
+        if (mapMemory[lastX][lastY] == World.APPLE_TREE) {
+            return World.APPLE_TREE_VALUE;
+        }
+
+        if (mapMemory[lastX][lastY] == World.BUSH) {
+            return World.BUSH_VALUE;
+        }
+
+        if (mapMemory[lastX][lastY] == World.ROCK) {
+            return World.ROCK_VALUE;
+        }
+
+        if (mapMemory[lastX][lastY] == World.SNAKE) {
+            return World.SNAKE_VALUE;
+        }
+
+        if (mapMemory[lastX][lastY] == World.WATER) {
+            return World.WATER_VALUE;
+        }
+
+        priorResults += World.GRASS_VALUE;
+
+        // TODO check +1/-1
+
+        int northX = lastX;
+        int northY = lastY + 1;
+        int southX = lastX;
+        int southY = lastY - 1;
+        int eastX = lastX + 1;
+        int eastY = lastY;
+        int westX = lastX - 1;
+        int westY = lastY;
+
+        double bestValue = Double.MIN_VALUE;
+
+        // check north
+        if (northX > 0 && northX < mapSizeX && northY > 0 && northY < mapSizeY && mapMemory[northX][northY] != World.ROCK) {
+            double value = getValue(northX, northY, priorResults);
+            if (value > bestValue) {
+                bestValue = value;
+            }
+        }
+
+        // check south
+        if (southX > 0 && southX < mapSizeX && southY > 0 && southY < mapSizeY && mapMemory[southX][southY] != World.ROCK) {
+            double value = getValue(southX, southY, priorResults);
+            if (value > bestValue) {
+                bestValue = value;
+            }
+        }
+
+        // check east
+        if (eastX > 0 && eastX < mapSizeX && eastY > 0 && eastY < mapSizeY && mapMemory[eastX][eastY] != World.ROCK) {
+            double value = getValue(eastX, eastY, priorResults);
+            if (value > bestValue) {
+                bestValue = value;
+            }
+        }
+
+        // check west
+        if (westX > 0 && westX < mapSizeX && westY > 0 && westY < mapSizeY && mapMemory[westX][westY] != World.ROCK) {
+            double value = getValue(westX, westY, priorResults);
+            if (value > bestValue) {
+                bestValue = value;
+            }
+        }
+
+        return bestValue;
+    }
+
+    private void valueIteration() {
+        // INITIALIZE VALUE ARRAY
+        for (int x = 0; x < mapSizeX; x++) {
+            for (int y = 0; y < mapSizeY; y++) {
+                Vs[x][y] = 0.0;
+            }
+        }
+
+        int steps = 0;
+        double biggestChange = 1;
+
+        while (biggestChange > .000001) {
+            biggestChange = 0.0;
+            for (int y = 0; y < mapSizeY; y++) {
+                for (int x = 0; x < mapSizeX; x++) {
+                    if (mapMemory[x][y] == World.ROCK || mapMemory[x][y] == World.ABYSS) {
+                        continue;
+                    }
+
+                    double last = Vs[x][y];
+                    Vs[x][y] = iterate(0.0, x, y);
+                    double change = Math.abs(last - Vs[x][y]);
+
+                    if (change > biggestChange) {
+                        biggestChange = change;
+                    }
+                }
+            }
+            steps++;
+        }
+
+        System.out.println("ITERATION TOOK " + steps + " STEPS.");
+
+        String center = Integer.toString((int) Vs[currentLocationX][currentLocationY]);
+        String north = currentLocationY+1 >= 0 && currentLocationY+1 <= mapSizeY-1 ? Integer.toString((int) Vs[currentLocationX][currentLocationY+1]) : "-";
+        String south = currentLocationY-1 >= 0 && currentLocationY-1 <= mapSizeY-1 ? Integer.toString((int) Vs[currentLocationX][currentLocationY-1]) : "-";
+        String east = currentLocationX+1 >= 0 && currentLocationX+1 <= mapSizeX-1 ? Integer.toString((int) Vs[currentLocationX+1][currentLocationY]) : "-";
+        String west = currentLocationX-1 >= 0 && currentLocationX-1 <= mapSizeX-1 ? Integer.toString((int) Vs[currentLocationX-1][currentLocationY]) : "-";
+
+        System.out.println("\t" + north + "\n" + west + "\t" + center + "\t" + east + "\n\t" + south);
+
+    }
+
+    public double[][] getValueIterationData() {
+        return Vs;
+    }
 	
 	@Override
 	public void explore() {
+        // when he doesnt have food 
+        valueIteration();
+
+        // 0. each square is one value  
+        // 1. calc valueIteration to find the path that will lead to the most unknown spaces
+        // 2. pick max
+
+        // take into variety ?
+
 		//TODO walks around to places he doesn't know or places he might forget and tries to learn
 		//TODO this is where we should add some value iteration stuff maybe
-		int dirNum = Math.abs(random.nextInt()%5);
-		Move move = Move.STAY;
+        int dirNum = Math.abs(random.nextInt()%5);
+        
+        Move move = Move.STAY;
+        
 		switch(dirNum){
 			case 0:
 				move = Move.STAY;
@@ -403,7 +592,8 @@ public class Truman implements ITruman{
 			case 4:
 				move = Move.WEST;
 				break;
-		}
+        }
+        
 		switch(move){
 			case NORTH:
 				if(currentLocationY + 1 < mapMemory[0].length)
