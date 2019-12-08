@@ -392,7 +392,7 @@ public abstract class Truman implements ITruman{
 		return false;
 	}
 	
-	private boolean haveSeenTree(){
+	protected boolean haveSeenTree(){
 		for(int[] ints : mapMemory) {
 			for(int anInt : ints) {
 				if(anInt == World.APPLE_TREE) {
@@ -403,7 +403,7 @@ public abstract class Truman implements ITruman{
 		return false;
 	}
 	
-	private boolean haveSeenBush(){
+	protected boolean haveSeenBush(){
 		for(int[] ints : mapMemory) {
 			for(int anInt : ints) {
 				if(anInt == World.BUSH) {
@@ -504,7 +504,7 @@ public abstract class Truman implements ITruman{
 		return false;
 	}
 	
-	private boolean haveSeenWater(){
+	protected boolean haveSeenWater(){
 		for(int[] ints : mapMemory) {
 			for(int anInt : ints) {
 				if(anInt == World.WATER) {

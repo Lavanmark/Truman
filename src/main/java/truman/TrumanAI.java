@@ -44,6 +44,9 @@ public class TrumanAI extends Truman {
 			return;
 		}
 		setState(Acts.EXPLORE);
+		
+		//smartDecisions();
+		
 		double hungerRatio = ((double)currentHunger/(double)MAX_HUNGER);
 		double thristRatio = ((double)currentThirst/(double)MAX_THIRST);
 		
@@ -69,7 +72,21 @@ public class TrumanAI extends Truman {
 		}
 	}
 	
+	private int valueState(int health, int variety, int hunger, int thirst, int tiredness){
+		int total = variety;
+		total -= hunger;
+		total -= thirst;
+		total += health;
+		total -= tiredness;
+		return total;
+	}
 	
+	private void smartDecisions(int health, int variety, int hunger, int thirst, int tiredness){
+		int curValue = valueState(health, variety, hunger, thirst, tiredness);
+		if(hunger > MAX_HUNGER/2){
+		
+		}
+	}
 	
 	
 	
