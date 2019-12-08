@@ -166,76 +166,56 @@ public class World {
 		for(Point snake : snakes) {
 			int shouldMove = Math.abs(random.nextInt()%100);
 			if(shouldMove < 25){
-				Truman.Move snakeMove = Truman.Move.STAY;
+				int snakeMove = Math.abs(random.nextInt() % Truman.TOTAL_MOVES);
 				if(shouldSnakeSeekTruman(snake, truman.getX(), truman.getY())){
 					int distx = snake.x - truman.getX();
 					int disty = snake.y - truman.getY();
 					
 					if(Math.abs(distx) > Math.abs(disty)){
 						if(distx > 0){ // to the left (west)
-							snakeMove = Truman.Move.WEST;
+							snakeMove = Truman.MOVE_WEST;
 						} else if(distx < 0){ // to the right (east)
-							snakeMove = Truman.Move.EAST;
+							snakeMove = Truman.MOVE_EAST;
 						} else {
-							snakeMove = Truman.Move.STAY;
+							snakeMove = Truman.MOVE_STAY;
 						}
 					} else {
 						if(disty > 0){ // truman is below the snake (south)
-							snakeMove = Truman.Move.SOUTH;
+							snakeMove = Truman.MOVE_SOUTH;
 						} else if(disty < 0){ // truman is above the snake (north)
-							snakeMove = Truman.Move.NORTH;
+							snakeMove = Truman.MOVE_NORTH;
 						} else {
-							snakeMove = Truman.Move.STAY;
+							snakeMove = Truman.MOVE_STAY;
 						}
 					}
 					
-				} else {
-					int direction = Math.abs(random.nextInt() % 5);
-					switch(direction) {
-						case 0:
-							snakeMove = Truman.Move.STAY;
-							break;
-						case 1:
-							snakeMove = Truman.Move.NORTH;
-							break;
-						case 2:
-							snakeMove = Truman.Move.SOUTH;
-							break;
-						case 3:
-							snakeMove = Truman.Move.EAST;
-							break;
-						case 4:
-							snakeMove = Truman.Move.WEST;
-							break;
-					}
 				}
 				switch(snakeMove){
-					case NORTH:
+					case Truman.MOVE_NORTH:
 						if(canSnakeMove(0, 1, snake)) {
 							snake.y += 1;
 							updateSnakeOnMap(0, 1, snake);
 						}
 						break;
-					case SOUTH:
+					case Truman.MOVE_SOUTH:
 						if(canSnakeMove(0, -1, snake)) {
 							snake.y -= 1;
 							updateSnakeOnMap(0, -1, snake);
 						}
 						break;
-					case EAST:
+					case Truman.MOVE_EAST:
 						if(canSnakeMove(1, 0, snake)) {
 							snake.x += 1;
 							updateSnakeOnMap(1, 0, snake);
 						}
 						break;
-					case WEST:
+					case Truman.MOVE_WEST:
 						if(canSnakeMove(-1, 0, snake)) {
 							snake.x -= 1;
 							updateSnakeOnMap(-1, 0, snake);
 						}
 						break;
 				}
-
 			}
 		}
 	}
