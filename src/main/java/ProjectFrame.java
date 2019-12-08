@@ -37,16 +37,17 @@ public class ProjectFrame extends JFrame {
 		try {
 			while(truman.getCurrentAge() <= Truman.AGE_OF_MAN) {
 				truman.growOlder();
-				try {
-					Thread.sleep(actionDelay);
-				} catch(InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
+				truman.updateMemory();
 				World.getInstance().update(truman);
 				truman.makeDecision();
 				truman.update();
 				truman.expressThoughts();
 				myWorldComponent.repaint();
+				try {
+					Thread.sleep(actionDelay);
+				} catch(InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
 			}
 			if(truman.getCurrentAge() >= Truman.AGE_OF_MAN){
 				myWorldComponent.setOldManWin();

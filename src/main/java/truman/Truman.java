@@ -2,6 +2,7 @@ package main.java.truman;
 
 import main.java.World;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public abstract class Truman implements ITruman{
@@ -82,6 +83,13 @@ public abstract class Truman implements ITruman{
         currentLocationY = worldSizeY/2;
         mapSizeX = worldSizeX;
         mapSizeY = worldSizeY;
+        
+        for(int[] ints : mapMemory){
+	        Arrays.fill(ints, World.ABYSS);
+        }
+        for(int[] ints : mapMemoryStrength){
+        	Arrays.fill(ints, 0);
+        }
 	}
 	
 	
@@ -114,7 +122,6 @@ public abstract class Truman implements ITruman{
 		updateSleep();
 		updateHunger();
 		updateThirst();
-		updateMemory();
 		updateHealth();
 		currentAction = nextAction; //Note: this will cause truman to keep doing the same thing until he changes actions.
 	}
@@ -208,7 +215,7 @@ public abstract class Truman implements ITruman{
 		}
 	}
 	
-	private void updateMemory() {
+	public void updateMemory() {
 		int memloss = Math.abs(random.nextInt()%100);
 		if(memloss < 50){
 			for(int x = 0; x < mapMemoryStrength.length; x++){
@@ -240,14 +247,6 @@ public abstract class Truman implements ITruman{
 	
 	
 	
-	
-	
-	
-	protected boolean checkDead() {
-		return currentHealth <= 0;
-	}
-	
-	
 	/* ******************************************************
 	 *
 	 *
@@ -266,6 +265,9 @@ public abstract class Truman implements ITruman{
 		return true;
 	}
 	
+	protected boolean checkDead() {
+		return currentHealth <= 0;
+	}
 	
 	private void doAction(){
 		switch(currentAction){
@@ -630,10 +632,13 @@ public abstract class Truman implements ITruman{
 	
 	@Override
 	public void addViewToMemory(int[][] worldPortion){
-		for(int x = 0; x < worldPortion.length; x++){
-			for(int y = 0; y < worldPortion[x].length; y++){
-				if(worldPortion[x][y] != World.ABYSS){
-					if(mapMemory[x][y] == worldPortion[x][y]){
+		for (int x = 0; x < worldPortion.length; x++){
+			for (int y = 0; y < worldPortion[x].length; y++){
+				if (worldPortion[x][y] != World.ABYSS){
+					if (mapMemory[x][y] == worldPortion[x][y]){
+						mapMemoryStrength[x][y]++;
+					} else if (mapMemory[x][y] == World.SNAKE || worldPortion[x][y] == World.SNAKE){
+						mapMemory[x][y] = worldPortion[x][y];
 						mapMemoryStrength[x][y]++;
 					} else {
 						mapMemory[x][y] = worldPortion[x][y];

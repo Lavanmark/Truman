@@ -153,6 +153,11 @@ public class WorldComponent extends JComponent {
 		g.drawOval((int) (trumanPointer.getX() * sqrWdth) + 1, (int) (((world.height-1) - trumanPointer.getY()) * sqrHght) + 1, (int) (sqrWdth - 1.4), (int) (sqrHght - 1.4));
 		
 		
+		
+		// *************************
+		// Draw Stats
+		// *************************
+		
 		g.drawLine(0,winHeight, winWidth, winHeight);
 		
 		int year = trumanPointer.getCurrentAge()/(365*24);

@@ -279,16 +279,24 @@ public class World {
 		currentView[x][y] = map[x][y];
 		for(int rx = -radius; rx <= radius; rx++){
 			for(int ry = -radius; ry <= radius; ry++) {
-				//TODO this makes a square and not a circle...
+				if(radius > 1) {
+					if(Math.abs(rx) == radius && Math.abs(ry) > (radius / 2))
+						continue;
+					if(Math.abs(ry) == radius && Math.abs(rx) > (radius / 2))
+						continue;
+					if(Math.abs(rx) == radius - 1 && Math.abs(ry) > (radius / 2)+1)
+						continue;
+					if(Math.abs(ry) == radius - 1 && Math.abs(rx) > (radius / 2)+1)
+						continue;
+				}
+				
 				int xmod = x + rx;
 				int ymod = y + ry;
-				if(xmod < width && xmod > -1) {
-					currentView[xmod][y] = map[xmod][y];
-				}
 				if(ymod < height && ymod > -1) {
 					currentView[x][ymod] = map[x][ymod];
 				}
 				if(xmod < width && xmod > -1) {
+					currentView[xmod][y] = map[xmod][y];
 					if(ymod < height && ymod > -1) {
 						currentView[xmod][ymod] = map[xmod][ymod];
 					}
