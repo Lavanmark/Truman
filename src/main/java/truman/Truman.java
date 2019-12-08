@@ -35,6 +35,7 @@ public abstract class Truman implements ITruman{
 	// MEMORY
 	protected int[][] mapMemory; // Stores the portions of the world that Truman knows
 	protected int[][] mapMemoryStrength; // Stores the strength of a particular value on the map, once it is 0, it is removed from the memory.
+	protected final int MEMORY_LOSS_CHANCE = 10;
     protected int viewRadius = 5;
 	protected int mapSizeX = 0;
 	protected int mapSizeY = 0;
@@ -217,7 +218,7 @@ public abstract class Truman implements ITruman{
 	
 	public void updateMemory() {
 		int memloss = Math.abs(random.nextInt()%100);
-		if(memloss < 50){
+		if(memloss < MEMORY_LOSS_CHANCE){
 			for(int x = 0; x < mapMemoryStrength.length; x++){
 				for(int y = 0; y < mapMemoryStrength[x].length; y++){
 					if(mapMemory[x][y] == World.ABYSS){
