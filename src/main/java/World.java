@@ -1,3 +1,9 @@
+package main.java;
+
+
+import main.java.truman.Truman;
+import main.java.truman.TrumanDiedException;
+
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -31,28 +37,28 @@ public class World {
 	private final int MAX_BERRIES_ON_BUSH = 8;
 	private final int MAX_APPLES_ON_TREE = 4;
 	
-	static final int APPLE_HUNGER_VALUE = 3;
-	static final int BERRY_HUNGER_VALUE = 1;
-	static final int WATER_THIRST_VALUE = 2;
+	public static final int APPLE_HUNGER_VALUE = 3;
+	public static final int BERRY_HUNGER_VALUE = 1;
+	public static final int WATER_THIRST_VALUE = 2;
 	
-	static final int SNAKE_BITE_VALUE = 50;
-	static final int SNAKE_ATTACK_RANGE = 4;
+	public static final int SNAKE_BITE_VALUE = 50;
+	public static final int SNAKE_ATTACK_RANGE = 4;
 	
-	static final int ABYSS = -1;
-	static final int GRASS = 0;
-	static final int APPLE_TREE = 1;
-	static final int BUSH = 2;
-	static final int ROCK = 3;
-	static final int SNAKE = 4;
-    static final int WATER = 5;
-    
-    static final double ABYSS_VALUE = 10;
-	static final double GRASS_VALUE = -1.0;
-	static final double APPLE_TREE_VALUE = 5.0;
-	static final double BUSH_VALUE = 5.0;
-	static final double ROCK_VALUE = -1000.0;
-	static final double SNAKE_VALUE = -10.0;
-	static final double WATER_VALUE = 5.0;
+	public static final int ABYSS = -1;
+	public static final int GRASS = 0;
+	public static final int APPLE_TREE = 1;
+	public static final int BUSH = 2;
+	public static final int ROCK = 3;
+	public static final int SNAKE = 4;
+	public static final int WATER = 5;
+	
+	public static final double ABYSS_VALUE = 10;
+	public static final double GRASS_VALUE = -1.0;
+	public static final double APPLE_TREE_VALUE = 5.0;
+	public static final double BUSH_VALUE = 5.0;
+	public static final double ROCK_VALUE = -1000.0;
+	public static final double SNAKE_VALUE = -10.0;
+	public static final double WATER_VALUE = 5.0;
 	
 	public World(String mapFileLocation) throws TrumanDiedException {
 		boolean imported = importMap(mapFileLocation);

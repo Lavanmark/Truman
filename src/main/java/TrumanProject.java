@@ -1,3 +1,7 @@
+package main.java;
+
+import main.java.truman.TrumanDiedException;
+
 public class TrumanProject {
 	private static final int MAP_INDEX = 0;
 	private static final int ACTION_DELAY_INDEX = 1;

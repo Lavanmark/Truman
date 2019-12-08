@@ -2,18 +2,30 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ab5d4dad-1fed-470e-a3db-26458e964221" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/truman/TrumanAI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Truman.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Truman.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Truman/Truman$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Truman/Truman$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Truman/Truman$Acts.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Truman/Truman$Acts.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Truman/Truman$Move.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Truman/Truman.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Truman/Truman.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Truman/TrumanProject.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Truman/TrumanProject.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Truman/World$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Truman/World.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Truman/World.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Truman/WorldComponent$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Truman/WorldComponent$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Truman/WorldComponent.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Truman/WorldComponent.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Truman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Truman.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Truman/ITruman.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Truman/ProjectFrame.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Truman/Truman$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Truman/Truman$Acts.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Truman/Truman.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Truman/TrumanDiedException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Truman/TrumanProject.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Truman/World.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Truman/WorldComponent$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Truman/WorldComponent.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Truman/maps/world10x10.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Truman/maps/world30x30.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ITruman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/truman/ITruman.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ProjectFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ProjectFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Truman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/truman/Truman.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/TrumanDiedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/truman/TrumanDiedException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/TrumanProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/TrumanProject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/World.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/World.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/WorldComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/WorldComponent.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,13 +58,13 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
   </component>
   <component name="RunManager">
     <configuration name="TrumanProject" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="ALTERNATIVE_JRE_PATH" value="11" />
-      <option name="MAIN_CLASS_NAME" value="TrumanProject" />
+      <option name="MAIN_CLASS_NAME" value="main.java.TrumanProject" />
       <module name="Truman" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -103,37 +115,37 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
-    <state x="434" y="190" key="#Project_Structure" timestamp="1575774105011">
+    <state x="434" y="190" key="#Project_Structure" timestamp="1575780194896">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state x="434" y="190" key="#Project_Structure/0.0.1680.1050@0.0.1680.1050" timestamp="1575774105011" />
+    <state x="434" y="190" key="#Project_Structure/0.0.1680.1050@0.0.1680.1050" timestamp="1575780194896" />
     <state x="516" y="228" key="#TrumanProject" timestamp="1575774045273">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="516" y="228" key="#TrumanProject/0.0.1680.1050@0.0.1680.1050" timestamp="1575774045273" />
-    <state x="304" y="187" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1575776440653">
+    <state x="304" y="187" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1575780428710">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state x="304" y="187" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1575776440653" />
-    <state x="577" y="316" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1575774014983">
+    <state x="304" y="187" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1575780428710" />
+    <state x="577" y="316" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1575780427151">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state x="577" y="316" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1575774014983" />
-    <state width="1638" height="295" key="GridCell.Tab.0.bottom" timestamp="1575777475194">
+    <state x="577" y="316" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1575780427151" />
+    <state width="1638" height="295" key="GridCell.Tab.0.bottom" timestamp="1575781538012">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="295" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1575777475194" />
-    <state width="1638" height="295" key="GridCell.Tab.0.center" timestamp="1575777475192">
+    <state width="1638" height="295" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1575781538012" />
+    <state width="1638" height="295" key="GridCell.Tab.0.center" timestamp="1575781538011">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="295" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1575777475192" />
-    <state width="1638" height="295" key="GridCell.Tab.0.left" timestamp="1575777475192">
+    <state width="1638" height="295" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1575781538011" />
+    <state width="1638" height="295" key="GridCell.Tab.0.left" timestamp="1575781538010">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="295" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1575777475192" />
-    <state width="1638" height="295" key="GridCell.Tab.0.right" timestamp="1575777475193">
+    <state width="1638" height="295" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1575781538010" />
+    <state width="1638" height="295" key="GridCell.Tab.0.right" timestamp="1575781538011">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="295" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1575777475193" />
+    <state width="1638" height="295" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1575781538011" />
   </component>
 </project>

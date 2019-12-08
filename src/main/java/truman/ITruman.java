@@ -1,3 +1,5 @@
+package main.java.truman;
+
 public interface ITruman {
 	int MAX_HEALTH = 100;
 	int MAX_HUNGER = 100;
@@ -13,9 +15,11 @@ public interface ITruman {
 	int MAX_VARIETY = 100;
 	int NO_VARIETY = 0;
 	int MIN_VARIETY_BOOST = 2;
+	int MAX_VARIETY_BOOST = 10;
 	double MAX_RISK = 0.6; //maximum risk Truman is willing to take
 	int AGE_OF_MAN = 630720; // 24 (time steps in a day) * 365 (days in a year) * 72 (years)
 	
+	void update() throws TrumanDiedException;
 	void makeDecision();
 	
 	boolean sleep();

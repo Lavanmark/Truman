@@ -1,3 +1,9 @@
+package main.java;
+
+import main.java.truman.Truman;
+import main.java.truman.TrumanAI;
+import main.java.truman.TrumanDiedException;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -16,7 +22,7 @@ public class ProjectFrame extends JFrame {
 		getContentPane().setBackground(bkgroundColor);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, width, height + bar + 100);
-		truman = new Truman(World.getInstance().width, World.getInstance().height);
+		truman = new TrumanAI(World.getInstance().width, World.getInstance().height);
 		myWorldComponent = new WorldComponent(width, height, truman);
 		getContentPane().add(myWorldComponent);
 		

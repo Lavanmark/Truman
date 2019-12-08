@@ -1,3 +1,7 @@
+package main.java;
+
+import main.java.truman.Truman;
+
 import javax.swing.*;
 import java.awt.*;
 
