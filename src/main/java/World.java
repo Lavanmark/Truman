@@ -36,6 +36,7 @@ public class World {
 	static final int WATER_THIRST_VALUE = 2;
 	
 	static final int SNAKE_BITE_VALUE = 50;
+	static final int SNAKE_ATTACK_RANGE = 4;
 	
 	static final int ABYSS = -1;
 	static final int GRASS = 0;
@@ -147,36 +148,60 @@ public class World {
 				truman.snakeBite();
 			}
 		}
-		moveSnakes();
+		moveSnakes(truman);
 		if(!truman.isSleeping()) {
 			truman.addViewToMemory(getCurrentView(truman.getX(), truman.getY(), truman.getViewRadius()));
 		}
 	}
 	
-	private void moveSnakes(){
+	private void moveSnakes(Truman truman){
 		for(Point snake : snakes) {
 			int shouldMove = Math.abs(random.nextInt()%100);
 			if(shouldMove < 25){
-				int direction = Math.abs(random.nextInt()%5);
-				Truman.Move move = Truman.Move.STAY;
-				switch(direction){
-					case 0:
-						move = Truman.Move.STAY;
-						break;
-					case 1:
-						move = Truman.Move.NORTH;
-						break;
-					case 2:
-						move = Truman.Move.SOUTH;
-						break;
-					case 3:
-						move = Truman.Move.EAST;
-						break;
-					case 4:
-						move = Truman.Move.WEST;
-						break;
+				Truman.Move snakeMove = Truman.Move.STAY;
+				if(shouldSnakeSeekTruman(snake, truman.getX(), truman.getY())){
+					int distx = snake.x - truman.getX();
+					int disty = snake.y - truman.getY();
+					
+					if(Math.abs(distx) > Math.abs(disty)){
+						if(distx > 0){ // to the left (west)
+							snakeMove = Truman.Move.WEST;
+						} else if(distx < 0){ // to the right (east)
+							snakeMove = Truman.Move.EAST;
+						} else {
+							snakeMove = Truman.Move.STAY;
+						}
+					} else {
+						if(disty > 0){ // truman is below the snake (south)
+							snakeMove = Truman.Move.SOUTH;
+						} else if(disty < 0){ // truman is above the snake (north)
+							snakeMove = Truman.Move.NORTH;
+						} else {
+							snakeMove = Truman.Move.STAY;
+						}
+					}
+					
+				} else {
+					int direction = Math.abs(random.nextInt() % 5);
+					switch(direction) {
+						case 0:
+							snakeMove = Truman.Move.STAY;
+							break;
+						case 1:
+							snakeMove = Truman.Move.NORTH;
+							break;
+						case 2:
+							snakeMove = Truman.Move.SOUTH;
+							break;
+						case 3:
+							snakeMove = Truman.Move.EAST;
+							break;
+						case 4:
+							snakeMove = Truman.Move.WEST;
+							break;
+					}
 				}
-				switch(move){
+				switch(snakeMove){
 					case NORTH:
 						if(canSnakeMove(0, 1, snake)) {
 							snake.y += 1;
@@ -205,6 +230,11 @@ public class World {
 
 			}
 		}
+	}
+	
+	private boolean shouldSnakeSeekTruman(Point snake, int trux, int truy){
+		// If a snake is within SNAKE_ATTACK_RANGE tiles of truman, it will hunt him down.
+		return (Math.abs(snake.x - trux) < SNAKE_ATTACK_RANGE && Math.abs(snake.y - truy) < SNAKE_ATTACK_RANGE);
 	}
 	
 	private boolean canSnakeMove(int xmod, int ymod, Point snake){
