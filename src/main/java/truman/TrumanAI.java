@@ -69,10 +69,7 @@ public class TrumanAI extends Truman {
 		}
 	}
 	
-	
-	
-	
-	
+
 	/* ******************************************************
 	 *
 	 *
@@ -80,7 +77,6 @@ public class TrumanAI extends Truman {
 	 *
 	 *
 	 * ****************************************************** */
-	
 	
 	
 	protected void seek(int x, int y){
@@ -94,19 +90,25 @@ public class TrumanAI extends Truman {
 	protected void goToGoalLocation(){
 		int xDist = Math.abs(goalX - getX());
 		int yDist = Math.abs(goalY - getY());
-		
-		if(xDist > 1 && goalX != getX() && xDist > yDist){
-			currentLocationX += goalX > getX() ? 1 : -1;
-		}else if( yDist > 1 && goalY != getY()){
-			currentLocationY += goalY > getY() ? 1 : -1;
-		} else {
+
+		// if(xDist > 1 && goalX != getX() && xDist > yDist){
+		// 	currentLocationX += goalX > getX() ? 1 : -1;
+		// }else if( yDist > 1 && goalY != getY()){
+		// 	currentLocationY += goalY > getY() ? 1 : -1;
+		// } else {
+		// 	goalX = -1;
+		// 	goalY = -1;
+		// 	setState(Acts.NO_ACTION);
+		// }
+        
+        if ((xDist > 1 && goalX != getX() && xDist > yDist) || (yDist > 1 && goalY != getY())) {
+            explore();
+        } else {
 			goalX = -1;
 			goalY = -1;
 			setState(Acts.NO_ACTION);
 		}
 	}
-	
-	
 	
 	
 	/* ******************************************************
@@ -118,20 +120,13 @@ public class TrumanAI extends Truman {
 	 * ****************************************************** */
 	
 	
-	
-	
 	@Override
 	public void explore() {
 		// when he doesnt have food
 		valueIteration();
 		
-		// 0. each square is one value
-		// 1. calc valueIteration to find the path that will lead to the most unknown spaces
-		// 2. pick max
-		
-		// take into variety ?
-		
-		//TODO walks around to places he doesn't know or places he might forget and tries to learn
+		// TODO take into account variety?
+		// TODO walks around to places he doesn't know or places he might forget and tries to learn
         
         int northX = currentLocationX;
 		int northY = currentLocationY + 1;
@@ -213,28 +208,15 @@ public class TrumanAI extends Truman {
 	 *
 	 *
 	 * ****************************************************** */
-	
-	
-	
-	
-	public double calcSpaceUtility(int move) {
-		// currentLocationX currentLocationY
-		return 0.0;
-	}
-	
-	public void calcMovementUtilities() {
-		// if not abyss, he can see
-		// mapMemory;
-		
-		// might forget so go back and revisit to keep it in memory
-		// mapMemoryStrength;
-		
-		// double[][] mapUtils = new double[mapSize][mapSize];
-		return;
-	}
+
+    private final double GOAL_VALUE = 50;
 	
 	private double getValue(int x, int y, double priorResults) {
-		double discountValue = .95;
+        double discountValue = .95;
+        
+        if (x == goalX && y == goalY) {
+            return GOAL_VALUE;
+        }
 		
 		if (mapMemory[x][y] == World.ABYSS) {
 			return discountValue * World.ABYSS_VALUE + priorResults;
@@ -266,6 +248,10 @@ public class TrumanAI extends Truman {
 	}
 	
 	private double iterate(double priorResults, int lastX, int lastY) {
+
+        if (lastX == goalX && lastY == goalY) {
+            return GOAL_VALUE;
+        }
 		
 		if (mapMemory[lastX][lastY] == World.APPLE_TREE) {
 			return World.APPLE_TREE_VALUE;
