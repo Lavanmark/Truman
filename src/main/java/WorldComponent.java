@@ -9,7 +9,7 @@ public class WorldComponent extends JComponent {
 	
 	private int winWidth, winHeight;
 	private double sqrWdth, sqrHght;
-	private Color grey = new Color(170, 170, 170);
+	private Color grey = new Color(170, 170, 170, 100);
 
     private boolean showValueIteration = true;
 	
@@ -125,7 +125,7 @@ public class WorldComponent extends JComponent {
                     if (col > 255) {
                         col = 255;
                     }
-                    col /= 2; // reduce overall heat map transparency by 50%
+                    col /= 3; // reduce overall heat map transparency
                     g.setColor(new Color(0, 0, 255, col));
                     g.fillRect(tlx, tly, (int) sqrWdth, (int) sqrHght);
                 }
@@ -140,11 +140,11 @@ public class WorldComponent extends JComponent {
                     int tly = (int) (((world.height-1) - y) * sqrHght);
 
                     // if (showValueIteration) {
-                        g.setColor(Color.BLACK);
-                        g.drawLine(tlx,tly,tlx+(int)sqrWdth, tly+(int)sqrHght);
+                        // g.setColor(Color.BLACK);
+                        // g.drawLine(tlx,tly,tlx+(int)sqrWdth, tly+(int)sqrHght);
                     // }
-                    // g.setColor(new Color(0, 0, 0, 200));
-                    // g.fillRect(tlx, tly, (int) sqrWdth, (int) sqrHght);
+                    g.setColor(new Color(0, 0, 0, 155));
+                    g.fillRect(tlx, tly, (int) sqrWdth, (int) sqrHght);
 				}
 			}
 		}
