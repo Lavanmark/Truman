@@ -416,8 +416,11 @@ public class Truman implements ITruman{
     private double getValue(int x, int y, double priorResults) {
         double discountValue = .95;
 
-        // TODO abyss
-        // TODO grass        
+        if (mapMemory[x][y] == World.ABYSS) {
+            return discountValue * World.ABYSS_VALUE + priorResults;
+        }
+
+        // TODO grass?
         
         if (mapMemory[x][y] == World.APPLE_TREE) {
             return discountValue * World.APPLE_TREE_VALUE + priorResults;

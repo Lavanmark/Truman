@@ -7,7 +7,7 @@ public class WorldComponent extends JComponent {
 	private double sqrWdth, sqrHght;
 	private Color grey = new Color(170, 170, 170);
 
-    private boolean showValueIteration = false;
+    private boolean showValueIteration = true;
 	
 	private Truman trumanPointer;
 	
@@ -134,8 +134,10 @@ public class WorldComponent extends JComponent {
 					int tlx = (int)(x * sqrWdth);
                     int tly = (int) (((world.height-1) - y) * sqrHght);
 
-					g.setColor(Color.BLACK);
-                    g.drawLine(tlx,tly,tlx+(int)sqrWdth, tly+(int)sqrHght);
+                    // if (showValueIteration) {
+                        g.setColor(Color.BLACK);
+                        g.drawLine(tlx,tly,tlx+(int)sqrWdth, tly+(int)sqrHght);
+                    // }
                     // g.setColor(new Color(0, 0, 0, 200));
                     // g.fillRect(tlx, tly, (int) sqrWdth, (int) sqrHght);
 				}

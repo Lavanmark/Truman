@@ -45,13 +45,13 @@ public class World {
 	static final int SNAKE = 4;
     static final int WATER = 5;
     
-    static final double ABYSS_VALUE = 0;
+    static final double ABYSS_VALUE = 10;
 	static final double GRASS_VALUE = -1.0;
-	static final double APPLE_TREE_VALUE = 10.0;
-	static final double BUSH_VALUE = 10.0;
+	static final double APPLE_TREE_VALUE = 5.0;
+	static final double BUSH_VALUE = 5.0;
 	static final double ROCK_VALUE = -1000.0;
-	static final double SNAKE_VALUE = -50.0;
-	static final double WATER_VALUE = 10.0;
+	static final double SNAKE_VALUE = -10.0;
+	static final double WATER_VALUE = 5.0;
 	
 	public World(String mapFileLocation) throws TrumanDiedException {
 		boolean imported = importMap(mapFileLocation);
