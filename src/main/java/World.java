@@ -57,8 +57,9 @@ public class World {
 	public static final double APPLE_TREE_VALUE = 5.0;
 	public static final double BUSH_VALUE = 5.0;
 	public static final double ROCK_VALUE = -1000.0;
-	public static final double SNAKE_VALUE = -10.0;
-	public static final double WATER_VALUE = 5.0;
+	public static final double SNAKE_VALUE = -50.0;
+    public static final double WATER_VALUE = 5.0;
+    public static final double GOAL_VALUE = 50.0;
 	
 	public World(String mapFileLocation) throws TrumanDiedException {
 		boolean imported = importMap(mapFileLocation);

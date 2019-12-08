@@ -7,7 +7,12 @@ public class TrumanAI extends Truman {
 	
 	// used for seeking
 	private int goalX = -1;
-	private int goalY = -1;
+    private int goalY = -1;
+    
+    private double abyssQuadA = 0.0;
+    private double abyssQuadB = 0.0;
+    private double abyssQuadC = 0.0;
+    private double abyssQuadD = 0.0;
 	
 	// store computed value of being in each state (x, y)
 	protected double[][] Vs;
@@ -228,17 +233,119 @@ public class TrumanAI extends Truman {
 	 *
 	 * ****************************************************** */
 
-    private final double GOAL_VALUE = 50;
-	
+    int calculationTimer = 0;
+
+    private void calcAbyssValues() {
+        if (calculationTimer > 0) {
+            calculationTimer -= 1;
+            return;
+        }
+        
+        calculationTimer = 10;
+
+        //    QUADRANTS
+        //        |
+        //    A   |   B
+        // ---------------
+        //    C   |   D
+        //        |
+        
+        int quads[] = new int[]{0, 0, 0, 0};
+
+        abyssQuadA = 5.0;
+        abyssQuadB = 5.0;
+        abyssQuadC = 5.0;
+        abyssQuadD = 5.0;
+
+        for (int x = 0; x < mapSizeX; x++) {
+            for (int y = 0; y < mapSizeX; y++) {
+                if (mapMemory[x][y] != World.ABYSS) {
+                    continue;
+                }
+
+                if (x >= mapSizeX/2 && y < mapSizeY/2) {
+                    quads[0] += 1; // quadA
+                } else if (x >= mapSizeX/2 && y >= mapSizeY/2) {
+                    quads[1] += 1; // quadB
+                } else if (x < mapSizeX/2 && y < mapSizeY/2) {
+                    quads[2] += 1; // quadC
+                } else if (x < mapSizeX/2 && y >= mapSizeY/2) {
+                    quads[3] += 1; // quadD
+                } else {
+                    System.out.println("ERROR: COULD NOT CALCULATE THE QUADRANTS CORRECTLY");
+                    System.exit(1);
+                }
+            }
+        }
+
+        System.out.println(quads[0] + "\t" + quads[1] + "\n" + quads[2] + "\t" + quads[3]);
+
+        int index = -1;
+        int max = Integer.MIN_VALUE;
+
+        double currVal = 25.0;
+        
+        for (int quad = 0; quad < quads.length; quad++) {
+            for (int i = 0; i < quads.length; i++) {
+                int value = quads[i];
+                if (value > max) {
+                    index = i;
+                    max = value;
+                }
+            }
+
+            if (index == -1) {
+                break;
+            } else {
+                if (index == 0) {
+                    abyssQuadA = currVal;
+                } else if (index == 1) {
+                    abyssQuadB = currVal;
+                } else if (index == 2) {
+                    abyssQuadC = currVal;
+                } else if (index == 3) {
+                    abyssQuadD = currVal;
+                } else {
+                    System.out.println("ERROR: COULD NOT CALCULATE THE QUADRANTS CORRECTLY pt 2");
+                    System.exit(1);
+                }
+
+                quads[index] = Integer.MIN_VALUE;
+                currVal -= 5.0;
+            }
+
+            index = -1;
+            max = Integer.MIN_VALUE;
+        }
+
+        System.out.println(abyssQuadA + "\t" + abyssQuadB + "\n" + abyssQuadC + "\t" + abyssQuadD);
+    }
+
+    private double getAbyssValue(int x, int y) {
+        if (x >= mapSizeX/2 && y < mapSizeY/2) {
+            return abyssQuadA; // quadA
+        } else if (x >= mapSizeX/2 && y >= mapSizeY/2) {
+            return abyssQuadB; // quadB
+        } else if (x < mapSizeX/2 && y < mapSizeY/2) {
+            return abyssQuadC; // quadC
+        } else if (x < mapSizeX/2 && y >= mapSizeY/2) {
+            return abyssQuadD; // quadD
+        } else {
+            System.out.println("ERROR: COULD NOT CALCULATE THE QUADRANTS CORRECTLY pt 3");
+            return Double.MIN_VALUE;
+        }
+    }
+
 	private double getValue(int x, int y, double priorResults) {
         double discountValue = .95;
         
         if (x == goalX && y == goalY) {
-            return GOAL_VALUE;
+            return World.GOAL_VALUE;
         }
 		
 		if (mapMemory[x][y] == World.ABYSS) {
-			return discountValue * World.ABYSS_VALUE + priorResults;
+            // return discountValue * World.ABYSS_VALUE + priorResults;
+            return discountValue * getAbyssValue(x, y) + priorResults;
 		}
 		
 		// TODO grass?
@@ -269,7 +376,7 @@ public class TrumanAI extends Truman {
 	private double iterate(double priorResults, int lastX, int lastY) {
 
         if (lastX == goalX && lastY == goalY) {
-            return GOAL_VALUE;
+            return World.GOAL_VALUE;
         }
 		
 		if (mapMemory[lastX][lastY] == World.APPLE_TREE) {
@@ -348,7 +455,9 @@ public class TrumanAI extends Truman {
 			for (int y = 0; y < mapSizeY; y++) {
 				Vs[x][y] = 0.0;
 			}
-		}
+        }
+        
+        calcAbyssValues();
 		
 		int steps = 0;
 		double biggestChange = 1;
