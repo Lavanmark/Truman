@@ -149,26 +149,74 @@ public class TrumanAI extends Truman {
 		// take into variety ?
 		
 		//TODO walks around to places he doesn't know or places he might forget and tries to learn
-		//TODO this is where we should add some value iteration stuff maybe
-		int move = Math.abs(random.nextInt()%TOTAL_MOVES);
+        
+        int northX = currentLocationX;
+		int northY = currentLocationY + 1;
+		int southX = currentLocationX;
+		int southY = currentLocationY - 1;
+		int eastX = currentLocationX + 1;
+		int eastY = currentLocationY;
+		int westX = currentLocationX - 1;
+		int westY = currentLocationY;
 		
-		switch(move){
-			case MOVE_NORTH:
-				if(currentLocationY + 1 < mapMemory[0].length)
-					currentLocationY += 1;
+        int bestMove = Truman.MOVE_STAY;
+        double bestValue = Double.MIN_VALUE;
+		
+		// check north
+		if (northX > 0 && northX < mapSizeX && northY > 0 && northY < mapSizeY && mapMemory[northX][northY] == World.GRASS) {
+            double value = Vs[northX][northY];
+            if (value > bestValue) {
+                bestMove = Truman.MOVE_NORTH;
+				bestValue = value;
+			}
+		}
+		
+		// check south
+		if (southX > 0 && southX < mapSizeX && southY > 0 && southY < mapSizeY && mapMemory[southX][southY] == World.GRASS) {
+            double value = Vs[southX][southY];
+            if (value > bestValue) {
+                bestMove = Truman.MOVE_SOUTH;
+				bestValue = value;
+			}
+		}
+		
+		// check east
+		if (eastX > 0 && eastX < mapSizeX && eastY > 0 && eastY < mapSizeY && mapMemory[eastX][eastY] == World.GRASS) {
+            double value = Vs[eastX][eastY];
+            if (value > bestValue) {
+                bestMove = Truman.MOVE_EAST;
+				bestValue = value;
+			}
+		}
+		
+		// check west
+		if (westX > 0 && westX < mapSizeX && westY > 0 && westY < mapSizeY && mapMemory[westX][westY] == World.GRASS) {
+            double value = Vs[westX][westY];
+            if (value  > bestValue) {
+                bestMove = Truman.MOVE_WEST;
+				bestValue = value;
+			}
+        }
+        
+		switch(bestMove){
+            case Truman.MOVE_NORTH:
+                System.out.println("MOVED NORTH");
+				currentLocationY += 1;
 				break;
-			case MOVE_SOUTH:
-				if(currentLocationY - 1 > -1)
-					currentLocationY -= 1;
+            case Truman.MOVE_SOUTH:
+            System.out.println("MOVED SOUTH");
+                currentLocationY -= 1;
 				break;
-			case MOVE_EAST:
-				if(currentLocationX + 1 < mapMemory.length)
-					currentLocationX += 1;
+            case Truman.MOVE_EAST:
+            System.out.println("MOVED EAST");
+				currentLocationX += 1;
 				break;
-			case MOVE_WEST:
-				if(currentLocationX - 1 > -1)
-					currentLocationX -= 1;
-				break;
+            case Truman.MOVE_WEST:
+                System.out.println("MOVED WEST");
+				currentLocationX -= 1;
+                break;
+            default:
+                System.out.println("CHOSE TO STAY");
 		}
 	}
 	
