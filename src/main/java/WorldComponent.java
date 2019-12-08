@@ -17,7 +17,7 @@ public class WorldComponent extends JComponent {
 	
 	private int gameState = 0; //Alive = 0, Dead = 1
 	
-	public WorldComponent( int windowWidth, int windowHeight, Truman truman){
+	public WorldComponent(int windowWidth, int windowHeight, Truman truman){
 		trumanPointer = truman;
 		winWidth = windowWidth;
 		winHeight = windowHeight;
@@ -31,8 +31,9 @@ public class WorldComponent extends JComponent {
 		requestFocus();
 	}
 	
-	public void setWin() {
-		gameState = 100;
+	public void setOldManWin() {
+		causeOfDeath = "Truman lived a \"happy\" life and died of old age.";
+		gameState = 2;
 		repaint();
 	}
 	
@@ -207,11 +208,10 @@ public class WorldComponent extends JComponent {
 		if (gameState == 1) {
 			g.setColor(Color.RED);
 			g.drawString(causeOfDeath, 150, 550);
+		} else if (gameState == 2) {
+			g.setColor(new Color(34, 139, 34));
+			g.drawString(causeOfDeath, 100, 550);
 		}
-//		} else if (gameStatus == 2) {
-//			g.setColor(Color.red);
-//			g.drawString("You're a Loser!", 8, 25);
-//		}
 	}
 	
 }

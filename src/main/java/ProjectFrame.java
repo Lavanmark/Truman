@@ -48,6 +48,10 @@ public class ProjectFrame extends JFrame {
 				truman.expressThoughts();
 				myWorldComponent.repaint();
 			}
+			if(truman.getCurrentAge() >= Truman.AGE_OF_MAN){
+				myWorldComponent.setOldManWin();
+				myWorldComponent.repaint();
+			}
 		} catch(TrumanDiedException e){
 			e.printStackTrace();
 			myWorldComponent.setDead(e.getMessage());
