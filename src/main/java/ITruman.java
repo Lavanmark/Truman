@@ -14,6 +14,7 @@ public interface ITruman {
 	int NO_VARIETY = 0;
 	int MIN_VARIETY_BOOST = 2;
 	double MAX_RISK = 0.6; //maximum risk Truman is willing to take
+	int AGE_OF_MAN = 630720; // 24 (time steps in a day) * 365 (days in a year) * 72 (years)
 	
 	void makeDecision();
 	

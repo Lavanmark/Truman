@@ -15,7 +15,7 @@ public class ProjectFrame extends JFrame {
 		setSize(width, height + bar);
 		getContentPane().setBackground(bkgroundColor);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(0, 0, width, height + bar);
+		setBounds(0, 0, width, height + bar + 100);
 		truman = new Truman(World.getInstance().width, World.getInstance().height);
 		myWorldComponent = new WorldComponent(width, height, truman);
 		getContentPane().add(myWorldComponent);
@@ -28,10 +28,9 @@ public class ProjectFrame extends JFrame {
 	}
 	
 	private void doStuff(int actionDelay) {
-		int steps = 0;
 		try {
-			while(true) {
-				steps++;
+			while(truman.getCurrentAge() <= Truman.AGE_OF_MAN) {
+				truman.growOlder();
 				try {
 					Thread.sleep(actionDelay);
 				} catch(InterruptedException e) {
@@ -40,9 +39,8 @@ public class ProjectFrame extends JFrame {
 				World.getInstance().update(truman);
 				truman.makeDecision();
 				truman.update();
-				myWorldComponent.setStepNumber(steps);
-				myWorldComponent.repaint();
 				truman.expressThoughts();
+				myWorldComponent.repaint();
 			}
 		} catch(TrumanDiedException e){
 			e.printStackTrace();

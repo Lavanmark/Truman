@@ -2,9 +2,7 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 public class World {
 	
@@ -27,6 +25,8 @@ public class World {
 	int[][] map = null;
 	private HashMap<Point, Integer> berries;
 	private HashMap<Point, Integer> apples;
+	
+	private ArrayList<Point> snakes;
 	
 	private final int MAX_BERRIES_ON_BUSH = 8;
 	private final int MAX_APPLES_ON_TREE = 4;
@@ -66,7 +66,7 @@ public class World {
 	public int pickBerries(int trux, int truy) {
 		if(map[trux][truy] == BUSH) {
 			int berriesOnBush = berries.get(toPoint(trux,truy));
-			int berriesPicked = Math.abs(random.nextInt()%berriesOnBush);
+			int berriesPicked = Math.abs(random.nextInt()%(berriesOnBush+1));
 			if(berriesOnBush > 0 && berriesPicked == 0) berriesPicked = 1;
 			berries.put(toPoint(trux,truy), berriesOnBush - berriesPicked);
 			return berriesPicked;
@@ -79,7 +79,7 @@ public class World {
 					if(ymod < height && ymod > -1) {
 						if(map[xmod][ymod] == BUSH){
 							int berriesOnBush = berries.get(toPoint(xmod,ymod));
-							int berriesPicked = Math.abs(random.nextInt()%berriesOnBush);
+							int berriesPicked = Math.abs(random.nextInt()%(berriesOnBush+1));
 							if(berriesOnBush > 0 && berriesPicked == 0) berriesPicked = 1;
 							berries.put(toPoint(xmod,ymod), berriesOnBush - berriesPicked);
 							return berriesPicked;
@@ -155,10 +155,81 @@ public class World {
 				truman.snakeBite();
 			}
 		}
-		//TODO move snakes
+		moveSnakes();
 		if(!truman.isSleeping()) {
 			truman.addViewToMemory(getCurrentView(truman.getX(), truman.getY(), truman.getViewRadius()));
 		}
+	}
+	
+	private void moveSnakes(){
+		for(Point snake : snakes) {
+			int shouldMove = Math.abs(random.nextInt()%100);
+			if(shouldMove < 25){
+				int direction = Math.abs(random.nextInt()%5);
+				Truman.Move move = Truman.Move.STAY;
+				switch(direction){
+					case 0:
+						move = Truman.Move.STAY;
+						break;
+					case 1:
+						move = Truman.Move.NORTH;
+						break;
+					case 2:
+						move = Truman.Move.SOUTH;
+						break;
+					case 3:
+						move = Truman.Move.EAST;
+						break;
+					case 4:
+						move = Truman.Move.WEST;
+						break;
+				}
+				switch(move){
+					case NORTH:
+						if(canSnakeMove(0, 1, snake)) {
+							snake.y += 1;
+							updateSnakeOnMap(0, 1, snake);
+						}
+						break;
+					case SOUTH:
+						if(canSnakeMove(0, -1, snake)) {
+							snake.y -= 1;
+							updateSnakeOnMap(0, -1, snake);
+						}
+						break;
+					case EAST:
+						if(canSnakeMove(1, 0, snake)) {
+							snake.x += 1;
+							updateSnakeOnMap(1, 0, snake);
+						}
+						break;
+					case WEST:
+						if(canSnakeMove(-1, 0, snake)) {
+							snake.x -= 1;
+							updateSnakeOnMap(-1, 0, snake);
+						}
+						break;
+				}
+
+			}
+		}
+	}
+	
+	private boolean canSnakeMove(int xmod, int ymod, Point snake){
+		if(snake.x + xmod > width - 1 || snake.x + xmod < 0){
+			return false;
+		}
+		
+		if(snake.y + ymod > height - 1 || snake.y + ymod < 0){
+			return false;
+		}
+		int typeOfFutureTile = map[snake.x+xmod][snake.y+ymod];
+		return typeOfFutureTile == GRASS;
+	}
+	
+	private void updateSnakeOnMap(int xmod, int ymod, Point snake){
+		map[snake.x-xmod][snake.y-ymod] = GRASS;
+		map[snake.x][snake.y] = SNAKE;
 	}
 	
 	private boolean isNearSnake(Truman truman){
@@ -226,6 +297,7 @@ public class World {
 			map = new int[width][height];
 			berries = new HashMap<>();
 			apples = new HashMap<>();
+			snakes = new ArrayList<>();
 			
 			for (int y = height - 1; y > -1; y--) {
 				String line = bufferedReader.readLine();
@@ -242,6 +314,7 @@ public class World {
 						map[x][y] = ROCK;
 					} else if (line.charAt(x) == 's') { // Snake
 						map[x][y] = SNAKE;
+						snakes.add(new Point(x,y));
 					} else if (line.charAt(x) == 'w') { // Water
 						map[x][y] = WATER;
 					}
