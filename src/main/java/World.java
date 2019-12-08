@@ -171,7 +171,7 @@ public class World {
 	private void moveSnakes(Truman truman){
 		for(Point snake : snakes) {
 			int shouldMove = Math.abs(random.nextInt()%100);
-			if(shouldMove < 25){
+			if(shouldMove < 10){
 				int snakeMove = Math.abs(random.nextInt() % Truman.TOTAL_MOVES);
 				if(shouldSnakeSeekTruman(snake, truman.getX(), truman.getY())){
 					int distx = snake.x - truman.getX();
