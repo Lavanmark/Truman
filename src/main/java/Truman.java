@@ -4,8 +4,10 @@ public class Truman implements ITruman{
 	
 	private Random random = new Random();
 	
+	private int currentAge = 0; // stored as time steps (basically hours...)
+	
 	private int currentLocationX,currentLocationY;
-	private enum Move {STAY, NORTH, SOUTH, EAST, WEST}
+	enum Move {STAY, NORTH, SOUTH, EAST, WEST}
 	
 	private int currentHealth = MAX_HEALTH;
 	private final int HEALTH_REGEN = 5;
@@ -75,7 +77,7 @@ public class Truman implements ITruman{
 		if(currentAction == nextAction && currentAction != Acts.SLEEP){
 			currentVariety--;
 		} else {
-			int varietyBoost = Math.abs(random.nextInt()%10);
+			int varietyBoost = Math.abs(random.nextInt()%10); //TODO maybe fix this up...
 			currentVariety += Math.max(varietyBoost, MIN_VARIETY_BOOST);
 			if(currentVariety > MAX_VARIETY){
 				currentVariety = MAX_VARIETY;
@@ -371,7 +373,7 @@ public class Truman implements ITruman{
 	
 	@Override
 	public boolean sleep() {
-		int sleepFor = Math.max(Math.abs(random.nextInt()%8), MIN_SLEEP); // Max 8 hours of sleep
+		int sleepFor = Math.max(Math.abs(random.nextInt()%11), MIN_SLEEP); // Max 8 hours of sleep
 		if(currentTiredness >= MAX_TIREDNESS){
 			sleepFor = currentTiredness/SLEEP_VALUE;
 		}
@@ -682,5 +684,13 @@ public class Truman implements ITruman{
 	}
 	public int[][] getMemoryStrength(){
 		return mapMemoryStrength;
+	}
+	
+	public void growOlder(){
+		currentAge++;
+	}
+	
+	public int getCurrentAge(){
+		return currentAge;
 	}
 }

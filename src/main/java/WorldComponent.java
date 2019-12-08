@@ -6,13 +6,10 @@ public class WorldComponent extends JComponent {
 	private int winWidth, winHeight;
 	private double sqrWdth, sqrHght;
 	private Color grey = new Color(170, 170, 170);
-	private Color myWhite = new Color(220, 220, 220);
 	
 	private Truman trumanPointer;
 	
 	private int gameState = 0; //Alive = 0, Dead = 1
-	
-	private int timeSteps = 0;
 	
 	public WorldComponent( int windowWidth, int windowHeight, Truman truman){
 		trumanPointer = truman;
@@ -28,10 +25,6 @@ public class WorldComponent extends JComponent {
 	public void addNotify() {
 		super.addNotify();
 		requestFocus();
-	}
-	
-	public void setStepNumber(int number){
-		timeSteps = number;
 	}
 	
 	public void setWin() {
@@ -104,13 +97,19 @@ public class WorldComponent extends JComponent {
 			}
 		}
 		
-		// System.out.println("repaint maxProb: " + maxProbs + "; " + mx + ", " + my);
-		
 		g.setColor(Color.BLACK);
 		g.drawOval((int) (trumanPointer.getX() * sqrWdth) + 1, (int) (((world.height-1) - trumanPointer.getY()) * sqrHght) + 1, (int) (sqrWdth - 1.4), (int) (sqrHght - 1.4));
 		
+		
+		g.drawLine(0,winHeight, winWidth, winHeight);
+		
+		int year = trumanPointer.getCurrentAge()/(365*24);
+		int day = trumanPointer.getCurrentAge()%(365*24)/24;
+		int hour = trumanPointer.getCurrentAge()%(365*24)%24;
+		
 		g.setColor(Color.BLACK);
-		g.drawString("Time Step: " + timeSteps, 380, 25);
+		g.drawString("Year: " + year + " Day: " + day + " Hour: " + hour, 320, 515);
+		g.drawString("Time Step: " + trumanPointer.getCurrentAge(), 380, 530);
 		
 		String actionString = "Nothing.";
 		switch(trumanPointer.getCurrentAction()){
@@ -143,17 +142,20 @@ public class WorldComponent extends JComponent {
 				break;
 		}
 		g.setColor(Color.BLACK);
-		g.drawString(actionString, 8, 25);
+		g.drawString(actionString, 5, 515);
 		
-		g.drawString("Health: "+ trumanPointer.getCurrentHealth(), 8,450);
-		g.drawString("Hunger: "+ trumanPointer.getCurrentHunger(), 8,465);
-		g.drawString("Thirst: "+ trumanPointer.getCurrentThirst(), 8,480);
-		g.drawString("Tiredness: "+ trumanPointer.getCurrentTiredness(), 400,480);
-		g.drawString("Variety: "+ trumanPointer.getCurrentVariety(), 400,465);
+		// LEFT side
+		g.drawString("Health: "+ trumanPointer.getCurrentHealth(), 5,565);
+		g.drawString("Hunger: "+ trumanPointer.getCurrentHunger(), 5,580);
+		g.drawString("Thirst: "+ trumanPointer.getCurrentThirst(), 5,595);
+		
+		//RIGHT side
+		g.drawString("Tiredness: "+ trumanPointer.getCurrentTiredness(), 400,595);
+		g.drawString("Variety: "+ trumanPointer.getCurrentVariety(), 400,580);
 		
 		if (gameState == 1) {
 			g.setColor(Color.RED);
-			g.drawString(causeOfDeath, 100, 250);
+			g.drawString(causeOfDeath, 150, 550);
 		}
 //		} else if (gameStatus == 2) {
 //			g.setColor(Color.red);

@@ -17,7 +17,7 @@ public class TrumanProject {
 	}
 	
 	public TrumanProject(){
-		this("world10x10.txt", 500);
+		this("world30x30.txt", 50);
 	}
 	
 	
