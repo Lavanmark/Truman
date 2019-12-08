@@ -7,7 +7,12 @@ public class Truman implements ITruman{
 	private int currentAge = 0; // stored as time steps (basically hours...)
 	
 	private int currentLocationX,currentLocationY;
-	enum Move {STAY, NORTH, SOUTH, EAST, WEST}
+	static final int MOVE_STAY = 0;
+	static final int MOVE_NORTH = 1;
+	static final int MOVE_SOUTH = 2;
+	static final int MOVE_EAST = 3;
+	static final int MOVE_WEST = 4;
+	static final int TOTAL_MOVES = 5;
 	
 	private int currentHealth = MAX_HEALTH;
 	private final int HEALTH_REGEN = 5;
@@ -397,9 +402,9 @@ public class Truman implements ITruman{
 		return sleepLength > 0;
     }
 
-    public double calcSpaceUtility(Move move) {
+    public double calcSpaceUtility(int move) {
         // currentLocationX currentLocationY
-        return 0.0;   
+        return 0.0;
     }
 
     public void calcMovementUtilities() {
@@ -577,42 +582,22 @@ public class Truman implements ITruman{
 
 		//TODO walks around to places he doesn't know or places he might forget and tries to learn
 		//TODO this is where we should add some value iteration stuff maybe
-        int dirNum = Math.abs(random.nextInt()%5);
-        
-        Move move = Move.STAY;
-        
-		switch(dirNum){
-			case 0:
-				move = Move.STAY;
-				break;
-			case 1:
-				move = Move.NORTH;
-				break;
-			case 2:
-				move = Move.SOUTH;
-				break;
-			case 3:
-				move = Move.EAST;
-				break;
-			case 4:
-				move = Move.WEST;
-				break;
-        }
+        int move = Math.abs(random.nextInt()%TOTAL_MOVES);
         
 		switch(move){
-			case NORTH:
+			case MOVE_NORTH:
 				if(currentLocationY + 1 < mapMemory[0].length)
 					currentLocationY += 1;
 				break;
-			case SOUTH:
+			case MOVE_SOUTH:
 				if(currentLocationY - 1 > -1)
 					currentLocationY -= 1;
 				break;
-			case EAST:
+			case MOVE_EAST:
 				if(currentLocationX + 1 < mapMemory.length)
 					currentLocationX += 1;
 				break;
-			case WEST:
+			case MOVE_WEST:
 				if(currentLocationX - 1 > -1)
 					currentLocationX -= 1;
 				break;

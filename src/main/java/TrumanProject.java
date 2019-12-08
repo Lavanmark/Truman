@@ -17,16 +17,15 @@ public class TrumanProject {
 	}
 	
 	public TrumanProject(){
-		this("world30x30.txt", 50);
+		this("world30x30.txt", 500);
 	}
 	
-	
 	public static void main(String[] args){
-		if(args.length == 1){
+		if(args.length == 1) {
 			new TrumanProject(args[TrumanProject.MAP_INDEX]);
 		} else if(args.length == 2) {
 			new TrumanProject(args[TrumanProject.MAP_INDEX],
-					Integer.getInteger(args[TrumanProject.ACTION_DELAY_INDEX]));
+					Integer.parseInt(args[TrumanProject.ACTION_DELAY_INDEX]));
 		} else {
 			new TrumanProject();
 		}
