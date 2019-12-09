@@ -3,7 +3,12 @@ package main.java.truman;
 
 import main.java.World;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
+
 public class TrumanAI extends Truman {
+	
+	private final boolean SMART_DECISIONS = false;
 	
 	// used for seeking
 	private int goalX = -1;
@@ -43,7 +48,15 @@ public class TrumanAI extends Truman {
 	
 	@Override
 	public void makeDecision() {
-		//TODO this is where we will figure out everything.
+		if(currentAction == Acts.SLEEP) {
+			return;
+		}
+		
+		if(SMART_DECISIONS){
+			smartDecision();
+			return;
+		}
+		
 		if(currentAction == Acts.SEEKING || (goalX != -1 && goalY != -1)){
 			setState(Acts.SEEKING);
 			return;
@@ -91,6 +104,147 @@ public class TrumanAI extends Truman {
 		}
 	}
 	
+	private void smartDecision(){
+		EnumMap<Acts, Double> actionValues = new EnumMap<>(Acts.class);
+		for(Acts action : Acts.values()){
+			double actionValue;
+			switch(action){
+				case NO_ACTION:
+					actionValue = noActionValue(currentHealth, currentTiredness, currentHunger, currentThirst);
+					break;
+				case SLEEP:
+					actionValue = sleepActionValue(currentTiredness, currentHunger, currentThirst);
+					break;
+				case EAT:
+					actionValue = eatActionValue(currentHealth, currentHunger, inventory[APPLE_INDEX], inventory[BERRY_INDEX]);
+					break;
+				case DRINK:
+					actionValue = drinkActionValue(currentHealth, currentThirst, inventory[WATER_INDEX]);
+					break;
+				case FORAGE:
+					actionValue = forageActionValue(currentHunger, inventory[APPLE_INDEX], inventory[BERRY_INDEX]);
+					break;
+				case COLLECT_WATER:
+					actionValue = collectWaterActionValue(currentThirst, inventory[WATER_INDEX]);
+					break;
+				case EXPLORE:
+					actionValue = exploreActionValue();
+					break;
+					default:
+						actionValue = Double.MIN_VALUE;
+						break;
+			}
+			actionValues.put(action, actionValue);
+		}
+		
+		double bestValue = Double.MIN_VALUE;
+		Acts bestAction = Acts.NO_ACTION;
+		for(Acts action : actionValues.keySet()){
+			if(actionValues.get(action) > bestValue){
+				bestValue = actionValues.get(action);
+				bestAction = action;
+			}
+		}
+		setState(bestAction);
+	}
+	
+	private double noActionValue(int health, int tiredness, int hunger, int thirst){
+		double value = Double.MIN_VALUE;
+		
+		if(health < MAX_HEALTH){
+			if(tiredness < MAX_TIREDNESS/3){
+				if(hunger < MAX_HUNGER/2){
+					if(thirst < MAX_THIRST/2){
+						value = 100.0 * ((double)MAX_HEALTH)/((double)health);
+					}
+				}
+			}
+		}
+		return value;
+	}
+	
+	private double sleepActionValue(int tiredness, int hunger, int thirst){
+		double value = 0.0;
+		
+		value -= hunger;
+		value -= thirst;
+		
+		value += (((double)tiredness)/24.0) * (double)MAX_TIREDNESS;
+		
+		return value;
+	}
+	
+	private double eatActionValue(int health, int hunger, int numApples, int numBerries) {
+		if(numApples + numBerries == 0 || hunger == 0){ // no food or hunger? no value in eating.
+			return Double.MIN_VALUE;
+		}
+		
+		double value = 0.0;
+		double hmod = 10.0 * (((double)MAX_HUNGER)/((double)hunger));
+		if(hunger == MAX_HUNGER){
+			value += HUNGER_HURT/(double)HUNGER_UPDATE_TIME;
+			if(health < MAX_HEALTH) {
+				value += hmod * (((double)MAX_HEALTH)/((double)health));
+			}
+		} else if(hunger > MAX_HUNGER/5){
+			value += hmod;
+		} else if(hunger < World.APPLE_HUNGER_VALUE && numBerries == 0) { // why consume an apple if you aren't going to use its full value?
+			value += 10.0; // This is a super arbitrary number...
+		}
+		
+		return value;
+	}
+	
+	
+	private double drinkActionValue(int health, int thirst, int numWater){
+		if(numWater == 0 || thirst == 0){
+			return Double.MIN_VALUE;
+		}
+		double value = 0.0;
+		double tmod = 10.0 * (((double)MAX_THIRST)/((double)thirst));
+		if(thirst == MAX_THIRST){
+			value += THIRST_HURT/(double)THIRST_UPDATE_TIME;
+			if(health < MAX_HEALTH) {
+				value += tmod * (((double)MAX_HEALTH)/((double)health));
+			}
+		} else if(thirst > MAX_THIRST/5){
+			value += tmod;
+		}
+		return value;
+	}
+	
+	private double forageActionValue(int hunger, int numApples, int numBerries) {
+		if(numApples == MAX_APPLE_STORAGE && numBerries == MAX_BERRY_STORAGE){
+			return Double.MIN_VALUE;
+		}
+		double value = 0.0;
+		
+		
+		
+		return value;
+	}
+	
+	private double collectWaterActionValue(int thirst, int numWater) {
+		if(numWater == MAX_WATER_STORAGE){
+			return Double.MIN_VALUE;
+		}
+		double value = 0.0;
+		
+		
+		
+		return value;
+	}
+	
+	private double exploreActionValue(){
+		//TODO if known amounts of the world is small, bigger value
+		//TODO if you don't know where water or food is, up the value
+		double value = 0.0;
+		
+		
+		return value;
+	}
+	
+	
 	private int valueState(int health, int variety, int hunger, int thirst, int tiredness){
 		int total = variety;
 		total -= hunger;
@@ -99,6 +253,8 @@ public class TrumanAI extends Truman {
 		total -= tiredness;
 		return total;
 	}
+	
+	
 	
 	private void smartDecisions(int health, int variety, int hunger, int thirst, int tiredness){
 		int curValue = valueState(health, variety, hunger, thirst, tiredness);
