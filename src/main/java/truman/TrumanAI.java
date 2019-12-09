@@ -283,6 +283,16 @@ public class TrumanAI extends Truman {
 		//TODO if you don't know where water or food is, up the value
 		double value = 0.0;
 		
+		if(!haveSeenWater()){
+			value += World.WATER_VALUE;
+		}
+		if(!haveSeenTree()){
+			value += World.APPLE_TREE_VALUE;
+		}
+		if(!haveSeenBush()){
+			value += World.BUSH_VALUE;
+		}
+		
 		
 		return value;
 	}
