@@ -39,7 +39,7 @@ public class World {
 	
 	public static final int APPLE_HUNGER_VALUE = 3;
 	public static final int BERRY_HUNGER_VALUE = 1;
-	public static final int WATER_THIRST_VALUE = 2;
+	public static final int WATER_THIRST_VALUE = 4;
 	
 	public static final int SNAKE_BITE_VALUE = 50;
 	public static final int SNAKE_ATTACK_RANGE = 4;

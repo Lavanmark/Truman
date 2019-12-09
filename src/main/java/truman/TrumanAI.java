@@ -8,7 +8,7 @@ import java.util.EnumMap;
 
 public class TrumanAI extends Truman {
 	
-	private final boolean SMART_DECISIONS = false;
+	private final boolean SMART_DECISIONS = true;
 	
 	// used for seeking
 	private int goalX = -1;
@@ -146,6 +146,16 @@ public class TrumanAI extends Truman {
 			}
 		}
 		setState(bestAction);
+		printActionValues(actionValues, bestAction);
+	}
+	
+	private void printActionValues(EnumMap<Acts, Double> actValues, Acts bestAction){
+		System.out.println("Time Step: " + getCurrentAge());
+		System.out.println("Best Action: " + bestAction.name());
+		for(Acts action : actValues.keySet()){
+			System.out.println(action.name() + " : " + actValues.get(action));
+		}
+		System.out.println("-- END --\n");
 	}
 	
 	private double noActionValue(int health, int tiredness, int hunger, int thirst){
@@ -180,7 +190,7 @@ public class TrumanAI extends Truman {
 		}
 		
 		double value = 0.0;
-		double hmod = 10.0 * (((double)MAX_HUNGER)/((double)hunger));
+		double hmod = 10.0 * (((double)hunger)/((double)MAX_HUNGER));
 		if(hunger == MAX_HUNGER){
 			value += HUNGER_HURT/(double)HUNGER_UPDATE_TIME;
 			if(health < MAX_HEALTH) {
@@ -190,6 +200,8 @@ public class TrumanAI extends Truman {
 			value += hmod;
 		} else if(hunger < World.APPLE_HUNGER_VALUE && numBerries == 0) { // why consume an apple if you aren't going to use its full value?
 			value += 10.0; // This is a super arbitrary number...
+		} else {
+			value += hunger;
 		}
 		
 		return value;
@@ -201,7 +213,7 @@ public class TrumanAI extends Truman {
 			return Double.MIN_VALUE;
 		}
 		double value = 0.0;
-		double tmod = 10.0 * (((double)MAX_THIRST)/((double)thirst));
+		double tmod = 10.0 * (((double)thirst)/((double)MAX_THIRST));
 		if(thirst == MAX_THIRST){
 			value += THIRST_HURT/(double)THIRST_UPDATE_TIME;
 			if(health < MAX_HEALTH) {
@@ -209,6 +221,8 @@ public class TrumanAI extends Truman {
 			}
 		} else if(thirst > MAX_THIRST/5){
 			value += tmod;
+		} else {
+			value += thirst;
 		}
 		return value;
 	}
@@ -219,6 +233,25 @@ public class TrumanAI extends Truman {
 		}
 		double value = 0.0;
 		
+		int hungerAfterEat = hunger - (numApples * World.APPLE_HUNGER_VALUE) - (numBerries * World.BERRY_HUNGER_VALUE);
+		
+		if(hungerAfterEat > MAX_HUNGER/5) {
+			value += hungerAfterEat * HUNGER_HURT;
+		}
+		if(haveSeenBush()) {
+			value += 10 * World.BERRY_HUNGER_VALUE;
+		}
+		if(haveSeenTree()) {
+			value += 10 * World.APPLE_HUNGER_VALUE;
+		}
+		
+		if(numApples < MAX_APPLE_STORAGE){
+			value += 5.0 * (MAX_APPLE_STORAGE - numApples);
+		}
+
+		if(numBerries < MAX_BERRY_STORAGE){
+			value += 3.0 * (MAX_BERRY_STORAGE - numBerries);
+		}
 		
 		
 		return value;
@@ -230,7 +263,17 @@ public class TrumanAI extends Truman {
 		}
 		double value = 0.0;
 		
+		int thirstAfterDrink = thirst - (numWater * World.WATER_THIRST_VALUE);
 		
+		if(thirstAfterDrink > MAX_THIRST/5) {
+			value += thirstAfterDrink * THIRST_HURT;
+		}
+		if(haveSeenWater()){
+			value += 10 * World.WATER_THIRST_VALUE;
+		}
+		if(numWater < MAX_WATER_STORAGE){
+			value += (10.0 * (MAX_WATER_STORAGE - numWater));
+		}
 		
 		return value;
 	}
@@ -242,25 +285,6 @@ public class TrumanAI extends Truman {
 		
 		
 		return value;
-	}
-	
-	
-	private int valueState(int health, int variety, int hunger, int thirst, int tiredness){
-		int total = variety;
-		total -= hunger;
-		total -= thirst;
-		total += health;
-		total -= tiredness;
-		return total;
-	}
-	
-	
-	
-	private void smartDecisions(int health, int variety, int hunger, int thirst, int tiredness){
-		int curValue = valueState(health, variety, hunger, thirst, tiredness);
-		if(hunger > MAX_HUNGER/2){
-		
-		}
 	}
 	
 	
