@@ -43,6 +43,7 @@ public class World {
 	
 	public static final int SNAKE_BITE_VALUE = 50;
 	public static final int SNAKE_ATTACK_RANGE = 4;
+	public static final int SNAKE_BITE_RANGE = 0;
 	
 	public static final int ABYSS = -1;
 	public static final int GRASS = 0;
@@ -56,7 +57,7 @@ public class World {
 	public static final double GRASS_VALUE = -1.0;
 	public static final double APPLE_TREE_VALUE = 5.0;
 	public static final double BUSH_VALUE = 5.0;
-	public static final double ROCK_VALUE = -1000.0;
+	public static final double ROCK_VALUE = -1.0;
 	public static final double SNAKE_VALUE = -50.0;
     public static final double WATER_VALUE = 5.0;
     public static final double GOAL_VALUE = 50.0;
@@ -253,10 +254,10 @@ public class World {
 		if(map[truman.getX()][truman.getY()] == SNAKE){
 			return true;
 		}
-		for(int x = -1; x <= 1; x++){
+		for(int x = -SNAKE_BITE_RANGE; x <= SNAKE_BITE_RANGE; x++){
 			int xmod = x + truman.getX();
 			if(xmod < width && xmod > -1) {
-				for(int y = -1; y <= 1; y++) {
+				for(int y = -SNAKE_BITE_RANGE; y <= SNAKE_BITE_RANGE; y++) {
 					int ymod = y + truman.getY();
 					if(ymod < height && ymod > -1) {
 						if(map[xmod][ymod] == SNAKE){

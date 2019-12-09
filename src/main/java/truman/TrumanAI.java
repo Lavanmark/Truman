@@ -56,24 +56,38 @@ public class TrumanAI extends Truman {
 		double thristRatio = ((double)currentThirst/(double)MAX_THIRST);
 		
 		//TODO update this so if you can't find food and you're thirsty, you find water.
-		if(hungerRatio >= thristRatio && (currentHunger > MAX_HUNGER/2 ||
-				(((inventory[APPLE_INDEX] + inventory[BERRY_INDEX] < 1) ||
-						inventory[APPLE_INDEX]+inventory[BERRY_INDEX] < inventory[WATER_INDEX]) && currentThirst < MAX_THIRST/2))){
-			if(inventory[APPLE_INDEX] < 1 && inventory[BERRY_INDEX] < 1){
-				setState(Acts.FORAGE);
-			} else {
+		if(hungerRatio >= thristRatio && (currentHunger > MAX_HUNGER/5 ||
+				(((inventory[APPLE_INDEX] + inventory[BERRY_INDEX] < MAX_APPLE_STORAGE) ||
+						inventory[APPLE_INDEX] + inventory[BERRY_INDEX] < inventory[WATER_INDEX]) && currentThirst < MAX_THIRST/2))){
+			
+			if(currentHunger > MAX_HUNGER/5 && inventory[APPLE_INDEX]+inventory[BERRY_INDEX] > 0){
 				setState(Acts.EAT);
+			}else{
+				setState(Acts.FORAGE);
 			}
-		} else if(currentThirst > MAX_THIRST/2 || inventory[WATER_INDEX] < 1){
-			if(inventory[WATER_INDEX] < 1){
-				setState(Acts.COLLECT_WATER);
-			} else {
-				setState(Acts.DRINK);
-			}
-		} else if(currentTiredness > MAX_TIREDNESS/3/2){
+			
+//			if(inventory[APPLE_INDEX] < MAX_APPLE_STORAGE && inventory[BERRY_INDEX] < MAX_APPLE_STORAGE){
+//				setState(Acts.FORAGE);
+//			} else {
+//				setState(Acts.EAT);
+//			}
+		} else if(currentTiredness > MAX_TIREDNESS/3){
+			sleep();
 			setState(Acts.SLEEP);
-		} else if(currentVariety < MAX_VARIETY/2){
-			setState(Acts.EXPLORE);
+		} else if(currentThirst > MAX_THIRST/5 || inventory[WATER_INDEX] < MAX_WATER_STORAGE){
+			if(currentThirst > MAX_THIRST/5 && inventory[WATER_INDEX] > 0){
+				setState(Acts.DRINK);
+			} else {
+				setState(Acts.COLLECT_WATER);
+			}
+			
+//			if(inventory[WATER_INDEX] < MAX_WATER_STORAGE){
+//				setState(Acts.COLLECT_WATER);
+//			} else {
+//				setState(Acts.DRINK);
+//			}
+		}  else if(currentVariety < MAX_VARIETY/2){
+			//setState(Acts.EXPLORE);
 		}
 	}
 	
@@ -115,17 +129,22 @@ public class TrumanAI extends Truman {
 		int xDist = Math.abs(goalX - getX());
 		int yDist = Math.abs(goalY - getY());
 
-		// if(xDist > 1 && goalX != getX() && xDist > yDist){
-		// 	currentLocationX += goalX > getX() ? 1 : -1;
-		// }else if( yDist > 1 && goalY != getY()){
-		// 	currentLocationY += goalY > getY() ? 1 : -1;
-		// } else {
-		// 	goalX = -1;
-		// 	goalY = -1;
-		// 	setState(Acts.NO_ACTION);
-		// }
-        
-        if ((xDist > 1 && goalX != getX() && xDist > yDist) || (yDist > 1 && goalY != getY())) {
+//		 if(xDist > 1 && goalX != getX() && xDist > yDist){
+//		 	currentLocationX += goalX > getX() ? 1 : -1;
+//		 }else if( yDist > 1 && goalY != getY()){
+//		 	currentLocationY += goalY > getY() ? 1 : -1;
+//		 } else {
+//		 	goalX = -1;
+//		 	goalY = -1;
+//		 	setState(Acts.NO_ACTION);
+//		 }
+		
+		if(goalX == -1 || goalY == -1){
+			setState(Acts.NO_ACTION);
+			return;
+		}
+
+        if ((xDist > 1 && goalX != getX()) || (yDist > 1 && goalY != getY())) {
             explore();
         } else {
 			goalX = -1;
@@ -272,7 +291,7 @@ public class TrumanAI extends Truman {
                 } else if (x < mapSizeX/2 && y >= mapSizeY/2) {
                     quads[3] += 1; // quadD
                 } else {
-                    System.out.println("ERROR: COULD NOT CALCULATE THE QUADRANTS CORRECTLY");
+                    System.err.println("ERROR: COULD NOT CALCULATE THE QUADRANTS CORRECTLY");
                     System.exit(1);
                 }
             }
@@ -306,7 +325,7 @@ public class TrumanAI extends Truman {
                 } else if (index == 3) {
                     abyssQuadD = currVal;
                 } else {
-                    System.out.println("ERROR: COULD NOT CALCULATE THE QUADRANTS CORRECTLY pt 2");
+                    System.err.println("ERROR: COULD NOT CALCULATE THE QUADRANTS CORRECTLY pt 2");
                     System.exit(1);
                 }
 

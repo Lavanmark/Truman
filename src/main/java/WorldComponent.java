@@ -206,6 +206,12 @@ public class WorldComponent extends JComponent {
 		g.drawString("Hunger: "+ trumanPointer.getCurrentHunger(), 5,580);
 		g.drawString("Thirst: "+ trumanPointer.getCurrentThirst(), 5,595);
 		
+		// CENTER
+		g.drawString("- Inventory -", 160,565);
+		g.drawString("Apples: " + trumanPointer.getApples(), 170, 580);
+		g.drawString("Berries: " + trumanPointer.getBerries(), 170, 595);
+		g.drawString("Water: " + trumanPointer.getWaterStorage(),230, 580);
+		
 		//RIGHT side
 		g.drawString("Tiredness: "+ trumanPointer.getCurrentTiredness(), 400,595);
 		g.drawString("Variety: "+ trumanPointer.getCurrentVariety(), 400,580);

@@ -2,9 +2,9 @@ package main.java.truman;
 
 public interface ITruman {
 	int MAX_HEALTH = 100;
-	int MAX_HUNGER = 100;
+	int MAX_HUNGER = 50;
 	int NO_HUNGER = 0;
-	int MAX_THIRST = 100;
+	int MAX_THIRST = 50;
 	int NO_THIRST = 0;
 	int MAX_LOVE = 10;
 	int NO_LOVE = -10;
@@ -24,7 +24,7 @@ public interface ITruman {
 	
 	boolean sleep();
 	void explore();
-	void stayPut();
+	void healthRegen();
 	boolean forage();
 	boolean eat();
 	boolean drink();

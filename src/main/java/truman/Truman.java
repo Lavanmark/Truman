@@ -53,13 +53,13 @@ public abstract class Truman implements ITruman{
 	
 	// HUNGER
 	protected final int HUNGER_HURT = 5;
-	protected final int HUNGER_UPDATE_TIME = 5;
+	protected final int HUNGER_UPDATE_TIME = 10;
 	protected int hungerCountdown = HUNGER_UPDATE_TIME;
 	protected int currentHunger = NO_HUNGER;
 	
 	// THIRST
 	protected final int THIRST_HURT = 2;
-	protected final int THIRST_UPDATE_TIME = 5;
+	protected final int THIRST_UPDATE_TIME = 10;
 	protected int thirstCountdown = THIRST_UPDATE_TIME;
 	protected int currentThirst = NO_THIRST;
 	
@@ -132,7 +132,7 @@ public abstract class Truman implements ITruman{
 			return;
 		}
 		if(currentAction == nextAction){
-			currentVariety--;
+			//currentVariety--;
 		} else {
 			int varietyBoost = Math.abs(random.nextInt()%MAX_VARIETY_BOOST); //TODO maybe fix this up...
 			currentVariety += Math.max(varietyBoost, MIN_VARIETY_BOOST);
@@ -150,7 +150,7 @@ public abstract class Truman implements ITruman{
 		}
 		
 		if(knowledgeCount < viewRadius * viewRadius *2){
-			currentVariety -= 3;
+			//currentVariety -= 2;
 		}
 		
 		if(currentVariety <= NO_VARIETY){
@@ -166,11 +166,13 @@ public abstract class Truman implements ITruman{
 			}
 			//He can still sleep even after accounting for all of lost sleep. He must complete the sleep length.
 			//This will provide for some risk in just always sleeping away the edge since he could die of hunger in his sleep.
-			sleepLength--;
 			if(sleepLength <= 0){
 				setState(Acts.WAKE_UP);
 				sleepLength = 0;
+			} else {
+				setState(Acts.SLEEP);
 			}
+			sleepLength--;
 		} else {
 			currentTiredness += AWAKE_COST;
 			if(currentTiredness > MAX_TIREDNESS){
@@ -235,13 +237,6 @@ public abstract class Truman implements ITruman{
 	}
 	
 	private void updateHealth(){
-		if(currentHealth < MAX_HEALTH) {
-			if(currentHunger < MAX_HUNGER / 2 &&
-					currentThirst < MAX_THIRST / 2 &&
-					currentTiredness < MAX_TIREDNESS/3){
-				currentHealth += HEALTH_REGEN;
-			}
-		}
 		if(currentHealth > MAX_HEALTH)
 			currentHealth = MAX_HEALTH;
 	}
@@ -294,7 +289,7 @@ public abstract class Truman implements ITruman{
 				findWater();
 				break;
 			case NO_ACTION:
-				stayPut();
+				healthRegen();
 				break;
 			case SEEKING:
 				System.out.println("Seeking!");
@@ -608,8 +603,14 @@ public abstract class Truman implements ITruman{
 	}
 	
 	@Override
-	public void stayPut() {
-		//TODO idk what to do here lol...
+	public void healthRegen() {
+		if(currentHealth < MAX_HEALTH) {
+			if(currentHunger < MAX_HUNGER / 2 &&
+					currentThirst < MAX_THIRST / 2 &&
+					currentTiredness < MAX_TIREDNESS/3){
+				currentHealth += HEALTH_REGEN;
+			}
+		}
 	}
 	
 	@Override
@@ -704,6 +705,14 @@ public abstract class Truman implements ITruman{
 	public int getCurrentAge(){
 		return currentAge;
 	}
-	
+	public int getApples(){
+		return inventory[APPLE_INDEX];
+	}
+	public int getBerries(){
+		return inventory[BERRY_INDEX];
+	}
+	public int getWaterStorage(){
+		return inventory[WATER_INDEX];
+	}
 	
 }
