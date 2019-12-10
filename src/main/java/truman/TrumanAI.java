@@ -282,8 +282,17 @@ public class TrumanAI extends Truman {
 		//TODO if known amounts of the world is small, bigger value
 		//TODO if you don't know where water or food is, up the value
 		double value = 0.0;
-        
-        
+		
+		if(!haveSeenWater()){
+			value += World.WATER_VALUE;
+		}
+		if(!haveSeenTree()){
+			value += World.APPLE_TREE_VALUE;
+		}
+		if(!haveSeenBush()){
+			value += World.BUSH_VALUE;
+		}
+		
 		
 		return value;
 	}
@@ -324,7 +333,7 @@ public class TrumanAI extends Truman {
 			setState(Acts.NO_ACTION);
 			return;
 		} else if ((xDist > 1 && goalX != getX()) || (yDist > 1 && goalY != getY())) {
-            explore();
+            smartSeek();
         } else {
 			goalX = -1;
 			goalY = -1;
