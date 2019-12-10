@@ -14,10 +14,8 @@ public class TrumanAI extends Truman {
 	private int goalX = -1;
     private int goalY = -1;
     
-    private double abyssQuadA = 0.0;
-    private double abyssQuadB = 0.0;
-    private double abyssQuadC = 0.0;
-    private double abyssQuadD = 0.0;
+    private double abyssDirs[] = new double[]{0.0, 0.0, 0.0, 0.0};
+    private double abyssQuads[] = new double[]{0.0, 0.0, 0.0, 0.0};
 	
 	// store computed value of being in each state (x, y)
 	protected double[][] Vs;
@@ -342,6 +340,9 @@ public class TrumanAI extends Truman {
 	}
 	
 	private void smartSeek(){
+        // continue to update values that he's explored
+        valueIteration();
+
 		int xDist = Math.abs(goalX - getX());
 		int yDist = Math.abs(goalY - getY());
 		
@@ -471,10 +472,14 @@ public class TrumanAI extends Truman {
     private void calcAbyssValues() {
         if (calculationTimer > 0) {
             calculationTimer -= 1;
-            // return;
+            return;
         }
         
         calculationTimer = 10;
+
+        // reset global storage
+        abyssDirs = new double[]{0.0, 0.0, 0.0, 0.0};
+        abyssQuads = new double[]{0.0, 0.0, 0.0, 0.0};
 
         //    QUADRANTS
         //        |
@@ -482,19 +487,32 @@ public class TrumanAI extends Truman {
         // ---------------
         //    C   |   D
         //        |
-        
-        int quads[] = new int[]{0, 0, 0, 0};
 
-        abyssQuadA = 5.0;
-        abyssQuadB = 5.0;
-        abyssQuadC = 5.0;
-        abyssQuadD = 5.0;
+        int dirs[] = new int[]{0, 0, 0, 0}; // NORTH, SOUTH, EAST, WEST
+        int quads[] = new int[]{0, 0, 0, 0}; // A, B, C, D
 
         for (int x = 0; x < mapSizeX; x++) {
             for (int y = 0; y < mapSizeX; y++) {
                 if (mapMemory[x][y] != World.ABYSS) {
                     continue;
                 }
+
+                // directions
+
+                if (y > currentLocationY) {
+                    dirs[0] += 1;
+                }
+                if (y < currentLocationY) {
+                    dirs[1] += 1;
+                }
+                if (x > currentLocationX) {
+                    dirs[2] += 1;
+                }
+                if (x < currentLocationX) {
+                    dirs[3] += 1;
+                }  
+
+                // quadrants
 
                 if (x >= mapSizeX/2 && y < mapSizeY/2) {
                     quads[0] += 1; // quadA
@@ -511,58 +529,89 @@ public class TrumanAI extends Truman {
             }
         }
 
-        System.out.println(quads[0] + "\t" + quads[1] + "\n" + quads[2] + "\t" + quads[3]);
+        System.out.println();
 
-        int index = -1;
-        int max = Integer.MIN_VALUE;
-
-        double currVal = 100.0;
+        // System.out.println(quads[0] + "\t" + quads[1] + "\n" + quads[2] + "\t" + quads[3]);
         
-        for (int quad = 0; quad < quads.length; quad++) {
-            for (int i = 0; i < quads.length; i++) {
-                int value = quads[i];
-                if (value > max) {
-                    index = i;
-                    max = value;
+        int dirIndex = -1;
+        int dirMax = Integer.MIN_VALUE;
+        double dirVal = 100.0;
+
+        int quadIndex = -1;
+        int quadMax = Integer.MIN_VALUE;
+        double quadVal = 100.0;
+        
+        for (int x = 0; x < 4; x++) {
+            for (int i = 0; i < 4; i++) {
+                int quadValue = quads[i];
+                int dirValue = dirs[i];
+
+                if (dirValue > dirMax) {
+                    dirIndex = i;
+                    dirMax = dirValue;
+                }
+
+                if (quadValue > quadMax) {
+                    quadIndex = i;
+                    quadMax = quadValue;
                 }
             }
 
-            if (index == -1) {
-                break;
-            } else {
-                if (index == 0) {
-                    abyssQuadA = currVal;
-                } else if (index == 1) {
-                    abyssQuadB = currVal;
-                } else if (index == 2) {
-                    abyssQuadC = currVal;
-                } else if (index == 3) {
-                    abyssQuadD = currVal;
-                } else {
-                    System.err.println("ERROR: COULD NOT CALCULATE THE QUADRANTS CORRECTLY pt 2");
-                    System.exit(1);
-                }
-
-                quads[index] = Integer.MIN_VALUE;
-                currVal /= 2.0;
+            if (dirIndex != -1) {
+                abyssDirs[dirIndex] = dirVal;
+                dirs[dirIndex] = Integer.MIN_VALUE;
+                dirVal /= 2.0;
             }
 
-            index = -1;
-            max = Integer.MIN_VALUE;
+            if (quadIndex != -1) {
+                abyssQuads[dirIndex] = quadVal;
+                quads[quadIndex] = Integer.MIN_VALUE;
+                quadVal /= 2.0;
+            }
+
+            dirIndex = -1;
+            quadIndex = -1;
+            dirMax = Integer.MIN_VALUE;
+            quadMax = Integer.MIN_VALUE;
         }
-
-        System.out.println(abyssQuadA + "\t" + abyssQuadB + "\n" + abyssQuadC + "\t" + abyssQuadD);
     }
 
     private double getAbyssValue(int x, int y) {
+        double val = 0.0;
+        int count = 0;
+
+        if (y > currentLocationY) {
+            val += abyssDirs[0];
+            count += 1;
+        }
+        if (y < currentLocationY) {
+            val += abyssDirs[1];
+            count += 1;
+        }
+        if (x > currentLocationX) {
+            val += abyssDirs[2];
+            count += 1;
+        }
+        if (x < currentLocationX) {
+            val += abyssDirs[3];
+            count += 1;
+        }  
+
+        if (count == 0) {
+            System.out.println("ERROR: SHOULD NOT GET HERE pt 7");
+            System.exit(1);
+        }
+
+        val /= (double) count;
+
         if (x >= mapSizeX/2 && y < mapSizeY/2) {
-            return abyssQuadA; // quadA
+            return (abyssQuads[0] + val) / 2.0; // quadA
         } else if (x >= mapSizeX/2 && y >= mapSizeY/2) {
-            return abyssQuadB; // quadB
+            return (abyssQuads[1] + val) / 2.0; // quadB
         } else if (x < mapSizeX/2 && y < mapSizeY/2) {
-            return abyssQuadC; // quadC
+            return (abyssQuads[2] + val) / 2.0; // quadC
         } else if (x < mapSizeX/2 && y >= mapSizeY/2) {
-            return abyssQuadD; // quadD
+            return (abyssQuads[3] + val) / 2.0; // quadD
         } else {
             System.out.println("ERROR: COULD NOT CALCULATE THE QUADRANTS CORRECTLY pt 3");
             return Double.MIN_VALUE;
@@ -570,7 +619,15 @@ public class TrumanAI extends Truman {
     }
 
 	private double getValue(int x, int y, double priorResults) {
+        if (x < 0 || x >= mapSizeX || y < 0 || y >= mapSizeY) {
+            return 0;
+        }
+        
         double discountValue = .95;
+
+        // if (x == 0 || x == mapSizeX - 1 || y == 0 || y == mapSizeY - 1) {
+        //     discountValue *= -1.0;
+        // }
         
         if (x == goalX && y == goalY) {
             return World.GOAL_VALUE;
@@ -581,15 +638,29 @@ public class TrumanAI extends Truman {
             return discountValue * getAbyssValue(x, y) + priorResults;
 		}
 		
-		// TODO grass?
+        // TODO grass?
+        
+        if (currentAction == Acts.FORAGE) {
+            if (mapMemory[x][y] == World.APPLE_TREE) {
+                return World.APPLE_TREE_VALUE;
+            }
+            
+            if (mapMemory[x][y] == World.BUSH) {
+                return World.BUSH_VALUE;
+            }
+        } else if (currentAction == Acts.COLLECT_WATER) {
+            if (mapMemory[x][y] == World.WATER) {
+                return World.WATER_VALUE;
+            }
+        }
 		
-		if (mapMemory[x][y] == World.APPLE_TREE) {
-			return discountValue * World.APPLE_TREE_VALUE + priorResults;
-		}
+		// if (mapMemory[x][y] == World.APPLE_TREE) {
+		// 	return discountValue * World.APPLE_TREE_VALUE + priorResults;
+		// }
 		
-		if (mapMemory[x][y] == World.BUSH) {
-			return discountValue * World.BUSH_VALUE + priorResults;
-		}
+		// if (mapMemory[x][y] == World.BUSH) {
+		// 	return discountValue * World.BUSH_VALUE + priorResults;
+		// }
 		
 		if (mapMemory[x][y] == World.ROCK) {
 			return World.ROCK_VALUE;
@@ -599,26 +670,39 @@ public class TrumanAI extends Truman {
 			return discountValue * World.SNAKE_VALUE + priorResults;
 		}
 		
-		if (mapMemory[x][y] == World.WATER) {
-			return discountValue * World.WATER_VALUE + priorResults;
-		}
+		// if (mapMemory[x][y] == World.WATER) {
+		// 	return discountValue * World.WATER_VALUE + priorResults;
+		// }
 		
 		return discountValue * Vs[x][y] + priorResults;
 	}
 	
 	private double iterate(double priorResults, int lastX, int lastY) {
+        if (currentAction == Acts.FORAGE) {
+            if (mapMemory[lastX][lastY] == World.APPLE_TREE) {
+                return World.APPLE_TREE_VALUE;
+            }
+            
+            if (mapMemory[lastX][lastY] == World.BUSH) {
+                return World.BUSH_VALUE;
+            }
+        } else if (currentAction == Acts.COLLECT_WATER) {
+            if (mapMemory[lastX][lastY] == World.WATER) {
+                return World.WATER_VALUE;
+            }
+        }
 
         if (lastX == goalX && lastY == goalY) {
             return World.GOAL_VALUE;
         }
 		
-		if (mapMemory[lastX][lastY] == World.APPLE_TREE) {
-			return World.APPLE_TREE_VALUE;
-		}
+		// if (mapMemory[lastX][lastY] == World.APPLE_TREE) {
+		// 	return World.APPLE_TREE_VALUE;
+		// }
 		
-		if (mapMemory[lastX][lastY] == World.BUSH) {
-			return World.BUSH_VALUE;
-		}
+		// if (mapMemory[lastX][lastY] == World.BUSH) {
+		// 	return World.BUSH_VALUE;
+		// }
 		
 		if (mapMemory[lastX][lastY] == World.ROCK) {
 			return World.ROCK_VALUE;
@@ -628,68 +712,41 @@ public class TrumanAI extends Truman {
 			return World.SNAKE_VALUE;
 		}
 		
-		if (mapMemory[lastX][lastY] == World.WATER) {
-			return World.WATER_VALUE;
-		}
+		// if (mapMemory[lastX][lastY] == World.WATER) {
+		// 	return World.WATER_VALUE;
+		// }
 		
 		priorResults += World.GRASS_VALUE;
 		
 		// TODO check +1/-1
 		
-		int northX = lastX;
-		int northY = lastY + 1;
-		int southX = lastX;
-		int southY = lastY - 1;
-		int eastX = lastX + 1;
-		int eastY = lastY;
-		int westX = lastX - 1;
-		int westY = lastY;
-		
-        double bestValue = Double.MIN_VALUE;
-        int numDir = 0;
-		
-		// check north
-		if (northX > 0 && northX < mapSizeX && northY > 0 && northY < mapSizeY && mapMemory[northX][northY] != World.ROCK) {
-			double value = getValue(northX, northY, priorResults);
-			// if (value > bestValue) {
-            bestValue += value;
-            numDir += 1;
-			// }
-		}
-		
-		// check south
-		if (southX > 0 && southX < mapSizeX && southY > 0 && southY < mapSizeY && mapMemory[southX][southY] != World.ROCK) {
-			double value = getValue(southX, southY, priorResults);
-			// if (value > bestValue) {
-            bestValue += value;
-            numDir += 1;
-			// }
-		}
-		
-		// check east
-		if (eastX > 0 && eastX < mapSizeX && eastY > 0 && eastY < mapSizeY && mapMemory[eastX][eastY] != World.ROCK) {
-			double value = getValue(eastX, eastY, priorResults);
-			// if (value > bestValue) {
-            bestValue += value;
-            numDir += 1;
-			// }
-		}
-		
-		// check west
-		if (westX > 0 && westX < mapSizeX && westY > 0 && westY < mapSizeY && mapMemory[westX][westY] != World.ROCK) {
-			double value = getValue(westX, westY, priorResults);
-			// if (value > bestValue) {
-            bestValue += value;
-            numDir += 1;
-			// }
-		}
+        double sum = 0;
         
-        if (numDir != 0) {
-            return bestValue / numDir;
-        } else {
-            System.out.println("ERROR: Should NOT get here!!");
-            return 0;
-        }
+        //northwest
+        sum += getValue(lastX - 1, lastY + 1, priorResults);
+
+		// north
+        sum += getValue(lastX, lastY + 1, priorResults);
+        
+        //northeast
+        sum += getValue(lastX + 1, lastY + 1, priorResults);
+
+        // west
+        sum += getValue(lastX - 1, lastY, priorResults);
+
+        // east
+        sum += getValue(lastX + 1, lastY, priorResults);
+
+        // southwest
+        sum += getValue(lastX - 1, lastY - 1, priorResults);
+
+		// south
+        sum += getValue(lastX, lastY - 1, priorResults);
+
+        // southeast
+        sum += getValue(lastX + 1, lastY - 1, priorResults);
+        
+        return sum / 8;
 	}
 	
 	private void valueIteration() {
