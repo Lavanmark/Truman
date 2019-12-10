@@ -204,7 +204,7 @@ public class TrumanAI extends Truman {
 			value += hunger;
 		}
 		
-		return value;
+		return value*2;
 	}
 	
 	
@@ -224,7 +224,7 @@ public class TrumanAI extends Truman {
 		} else {
 			value += thirst;
 		}
-		return value;
+		return value*2;
 	}
 	
 	private double forageActionValue(int hunger, int numApples, int numBerries) {
@@ -334,9 +334,8 @@ public class TrumanAI extends Truman {
 //		 	setState(Acts.NO_ACTION);
 //		 }
 		
-		if(goalX <= 0 || goalY <= 0 -1){
+		if(goalX < 0 && goalY < 0){
 			setState(Acts.NO_ACTION);
-			return;
 		} else if ((xDist > 1 && goalX != getX()) || (yDist > 1 && goalY != getY())) {
             smartSeek();
         } else {
@@ -348,7 +347,7 @@ public class TrumanAI extends Truman {
 	
 	private void smartSeek(){
         // continue to update values that he's explored
-        valueIteration();
+        // valueIteration();
 
 		int xDist = Math.abs(goalX - getX());
 		int yDist = Math.abs(goalY - getY());
@@ -612,7 +611,7 @@ public class TrumanAI extends Truman {
         }  
 
         if (count == 0) {
-            System.out.println("ERROR: SHOULD NOT GET HERE pt 7");
+            System.err.println("ERROR: SHOULD NOT GET HERE pt 7");
             System.exit(1);
         }
 
@@ -627,14 +626,14 @@ public class TrumanAI extends Truman {
         } else if (x < mapSizeX/2 && y >= mapSizeY/2) {
             return (abyssQuads[3] + val) / 2.0; // quadD
         } else {
-            System.out.println("ERROR: COULD NOT CALCULATE THE QUADRANTS CORRECTLY pt 3");
-            return Double.MIN_VALUE;
+            System.err.println("ERROR: COULD NOT CALCULATE THE QUADRANTS CORRECTLY pt 3");
+            return -Double.MAX_VALUE;
         }
     }
 
 	private double getValue(int x, int y, double priorResults) {
         if (x < 0 || x >= mapSizeX || y < 0 || y >= mapSizeY) {
-            return 0;
+            return World.WALL_VALUE;
         }
         
         double discountValue = .95;
@@ -643,9 +642,9 @@ public class TrumanAI extends Truman {
         //     discountValue *= -1.0;
         // }
         
-        if (x == goalX && y == goalY) {
-            return World.GOAL_VALUE;
-        }
+//        if (x == goalX && y == goalY) {
+//            return World.GOAL_VALUE;
+//        }
 		
 		if (mapMemory[x][y] == World.ABYSS) {
             // return discountValue * World.ABYSS_VALUE + priorResults;
@@ -653,6 +652,9 @@ public class TrumanAI extends Truman {
 		}
 		
         // TODO grass?
+//		if(mapMemory[x][y] == World.GRASS){
+//			return discountValue * World.GRASS_VALUE;
+//		}
         
         if (currentAction == Acts.FORAGE) {
             if (mapMemory[x][y] == World.APPLE_TREE) {
@@ -694,11 +696,11 @@ public class TrumanAI extends Truman {
 	private double iterate(double priorResults, int lastX, int lastY) {
         if (currentAction == Acts.FORAGE) {
             if (mapMemory[lastX][lastY] == World.APPLE_TREE) {
-                return World.APPLE_TREE_VALUE;
+                return inventory[APPLE_INDEX] < MAX_APPLE_STORAGE ? World.GRASS_VALUE : World.APPLE_TREE_VALUE;
             }
             
             if (mapMemory[lastX][lastY] == World.BUSH) {
-                return World.BUSH_VALUE;
+                return inventory[BERRY_INDEX] < MAX_BERRY_STORAGE ? World.GRASS_VALUE : World.BUSH_VALUE;
             }
         } else if (currentAction == Acts.COLLECT_WATER) {
             if (mapMemory[lastX][lastY] == World.WATER) {
@@ -706,9 +708,9 @@ public class TrumanAI extends Truman {
             }
         }
 
-        if (lastX == goalX && lastY == goalY) {
-            return World.GOAL_VALUE;
-        }
+//        if (lastX == goalX && lastY == goalY) {
+//            return World.GOAL_VALUE;
+//        }
 		
 		// if (mapMemory[lastX][lastY] == World.APPLE_TREE) {
 		// 	return World.APPLE_TREE_VALUE;

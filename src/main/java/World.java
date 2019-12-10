@@ -54,13 +54,14 @@ public class World {
 	public static final int WATER = 5;
 	
 	public static final double ABYSS_VALUE = 10;
-	public static final double GRASS_VALUE = 1.0;
+	public static final double GRASS_VALUE = -1.0;
 	public static final double APPLE_TREE_VALUE = 5.0;
 	public static final double BUSH_VALUE = 5.0;
 	public static final double ROCK_VALUE = -1.0;
 	public static final double SNAKE_VALUE = -1000.0;
     public static final double WATER_VALUE = 5.0;
-    public static final double GOAL_VALUE = 50.0;
+    public static final double WALL_VALUE = -5.0;
+    //public static final double GOAL_VALUE = 50.0;
 	
 	public World(String mapFileLocation) throws TrumanDiedException {
 		boolean imported = importMap(mapFileLocation);
@@ -75,7 +76,7 @@ public class World {
 	public int pickBerries(int trux, int truy) {
 		if(map[trux][truy] == BUSH) {
 			int berriesOnBush = berries.get(toPoint(trux,truy));
-			int berriesPicked = Math.abs(random.nextInt()%(berriesOnBush+1));
+			int berriesPicked = Math.abs(random.nextInt()%(Math.max(berriesOnBush+1,Truman.MAX_BERRY_STORAGE)));
 			if(berriesOnBush > 0 && berriesPicked == 0) berriesPicked = 1;
 			berries.put(toPoint(trux,truy), berriesOnBush - berriesPicked);
 			return berriesPicked;

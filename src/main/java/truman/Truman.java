@@ -49,7 +49,7 @@ public abstract class Truman implements ITruman{
 	
 	protected final int MAX_WATER_STORAGE = 5;
 	protected final int MAX_APPLE_STORAGE = 5;
-	protected final int MAX_BERRY_STORAGE = 20;
+	public static final int MAX_BERRY_STORAGE = 20;
 	
 	// HUNGER
 	protected final int HUNGER_HURT = 5;
