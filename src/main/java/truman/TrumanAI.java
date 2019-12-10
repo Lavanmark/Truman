@@ -8,7 +8,7 @@ import java.util.EnumMap;
 
 public class TrumanAI extends Truman {
 	
-	private final boolean SMART_DECISIONS = false;
+	private final boolean SMART_DECISIONS = true;
 	
 	// used for seeking
 	private int goalX = -1;
@@ -61,7 +61,6 @@ public class TrumanAI extends Truman {
 		}
 		setState(Acts.EXPLORE);
 		
-		//smartDecisions();
 		
 		double hungerRatio = ((double)currentHunger/(double)MAX_HUNGER);
 		double thristRatio = ((double)currentThirst/(double)MAX_THIRST);
@@ -128,6 +127,9 @@ public class TrumanAI extends Truman {
 				case EXPLORE:
 					actionValue = exploreActionValue();
 					break;
+				case RUN_AWAY:
+					actionValue = runAwayActionValue();
+					break;
 					default:
 						actionValue = -Double.MAX_VALUE;
 						break;
@@ -188,7 +190,7 @@ public class TrumanAI extends Truman {
 		}
 		
 		double value = 0.0;
-		double hmod = 10.0 * (((double)hunger)-((double)MAX_HUNGER));
+		double hmod = 100.0 * (((double)hunger)/((double)MAX_HUNGER));
 		if(hunger == MAX_HUNGER) {
 			value += HUNGER_HURT/(double)HUNGER_UPDATE_TIME;
 			if(health < MAX_HEALTH) {
@@ -211,7 +213,7 @@ public class TrumanAI extends Truman {
 			return -Double.MAX_VALUE;
 		}
 		double value = 0.0;
-		double tmod = 10.0 * (((double)thirst)/((double)MAX_THIRST));
+		double tmod = 100.0 * (((double)thirst)/((double)MAX_THIRST));
 		if(thirst == MAX_THIRST){
 			value += THIRST_HURT/(double)THIRST_UPDATE_TIME;
 			if(health < MAX_HEALTH) {
@@ -238,17 +240,15 @@ public class TrumanAI extends Truman {
 		}
 		if(haveSeenBush()) {
 			value += 10 * World.BERRY_HUNGER_VALUE;
+			if(numBerries < MAX_BERRY_STORAGE){
+				value += 1.0 * (MAX_BERRY_STORAGE - numBerries);
+			}
 		}
 		if(haveSeenTree()) {
 			value += 10 * World.APPLE_HUNGER_VALUE;
-		}
-		
-		if(numApples < MAX_APPLE_STORAGE){
-			value += 5.0 * (MAX_APPLE_STORAGE - numApples);
-		}
-
-		if(numBerries < MAX_BERRY_STORAGE){
-			value += 1.0 * (MAX_BERRY_STORAGE - numBerries);
+			if(numApples < MAX_APPLE_STORAGE){
+				value += 5.0 * (MAX_APPLE_STORAGE - numApples);
+			}
 		}
 		
 		
@@ -293,6 +293,13 @@ public class TrumanAI extends Truman {
 		
 		
 		return value;
+	}
+	
+	private double runAwayActionValue() {
+		if(World.getInstance().isNearSnake(this)){
+			return Double.MAX_VALUE;
+		}
+		return -Double.MAX_VALUE;
 	}
 	
 	
@@ -347,21 +354,28 @@ public class TrumanAI extends Truman {
 		int yDist = Math.abs(goalY - getY());
 		
 		
-		boolean snakeToRight = thinkNearSnake(getX()+1, getY());
-		boolean snakeToLeft = thinkNearSnake(getX()-1,getY());
-		boolean snakeToUp = thinkNearSnake(getX(), getY()+1);
-		boolean snakeToDown = thinkNearSnake(getX(), getY()-1);
-		
-		if(xDist > 1 && goalX != getX() && xDist > yDist && (!snakeToRight || !snakeToLeft)) {
+		boolean snakeToRight = thinkNearSnake(getX()+1, getY(), MOVE_EAST);
+		boolean snakeToLeft = thinkNearSnake(getX()-1,getY(), MOVE_WEST);
+		boolean snakeToUp = thinkNearSnake(getX(), getY()+1, MOVE_NORTH);
+		boolean snakeToDown = thinkNearSnake(getX(), getY()-1, MOVE_SOUTH);
+		int xdir = goalX > getX() ? MOVE_EAST : MOVE_WEST;
+		int ydir = goalY > getY() ? MOVE_NORTH : MOVE_SOUTH;
+		if(xDist > 1 && goalX != getX() && xDist > yDist && ((!snakeToRight && xdir == MOVE_EAST) || (!snakeToLeft && xdir == MOVE_WEST))) {
 			currentLocationX += goalX > getX() ? 1 : -1;
-		} else if(yDist > 1 && goalY != getY() && (!snakeToDown || !snakeToUp)) {
+		} else if(yDist >= 1 && goalY != getY() && ((!snakeToDown && ydir == MOVE_SOUTH)|| (!snakeToUp && ydir == MOVE_NORTH))) {
 			currentLocationY += goalY > getY() ? 1 : -1;
 		}
 	}
 	
-	private boolean thinkNearSnake(int trux, int truy){
-		if(trux > -1 && trux < mapSizeX && truy > -1 && truy < mapSizeY) {
-			return mapMemory[trux][truy] == World.SNAKE;
+	private boolean thinkNearSnake(int trux, int truy, int dir){
+		for(int x = (dir == MOVE_EAST?0:-1); x <= (dir == MOVE_WEST?0: 1); x++){
+			for(int y = (dir == MOVE_NORTH? 0 : -1); y <= (dir == MOVE_SOUTH? 0 :1); y++) {
+				if(trux+x > -1 && trux+x < mapSizeX && truy+y > -1 && truy+y < mapSizeY) {
+					if(mapMemory[trux + x][truy + y] == World.SNAKE){
+						return true;
+					}
+				}
+			}
 		}
 		return false;
 	}

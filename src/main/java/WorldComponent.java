@@ -194,6 +194,9 @@ public class WorldComponent extends JComponent {
 			case NO_ACTION:
 				actionString = "Doing Nothing.";
 				break;
+			case RUN_AWAY:
+				actionString = "Running Away!";
+				break;
 			case SEEKING:
 				actionString = "Seeking location...";
 				break;

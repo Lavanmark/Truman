@@ -71,7 +71,7 @@ public abstract class Truman implements ITruman{
 	protected int currentTiredness = NO_TIREDNESS;
 	
 	// ACTIONS
-	public enum Acts {NO_ACTION, EAT, DRINK, SLEEP, WAKE_UP, EXPLORE, FORAGE, COLLECT_WATER, SEEKING}
+	public enum Acts {NO_ACTION, EAT, DRINK, SLEEP, WAKE_UP, EXPLORE, FORAGE, COLLECT_WATER, SEEKING, RUN_AWAY}
 	protected Acts currentAction = Acts.NO_ACTION;
     protected Acts nextAction = Acts.NO_ACTION;
     
@@ -291,6 +291,9 @@ public abstract class Truman implements ITruman{
 			case NO_ACTION:
 				healthRegen();
 				break;
+			case RUN_AWAY:
+				explore();
+				break;
 			case SEEKING:
 				System.out.println("Seeking!");
 				goToGoalLocation();
@@ -312,81 +315,155 @@ public abstract class Truman implements ITruman{
 	
 	@Override
 	public boolean forage() {
-		boolean foundTree = false;
-		boolean foundBush = false;
+		int numBerries = inventory[BERRY_INDEX];
+		int numApples = inventory[APPLE_INDEX];
+		boolean nearTree = false;
+		boolean nearBush = false;
 		for(int x = -1; x <= 1; x++){
 			int xmod = x + getX();
 			if(xmod < mapMemory.length && xmod > -1) {
 				for(int y = -1; y <= 1; y++) {
 					int ymod = y + getY();
 					if(ymod < mapMemory[xmod].length && ymod > -1) {
-						foundTree = foundTree ? foundTree : mapMemory[xmod][ymod] == World.APPLE_TREE;
-						foundBush = foundBush ? foundBush : mapMemory[xmod][ymod] == World.BUSH;
+						nearTree = nearTree ? nearTree : mapMemory[xmod][ymod] == World.APPLE_TREE;
+						nearBush = nearBush ? nearBush : mapMemory[xmod][ymod] == World.BUSH;
 					}
 				}
 			}
 		}
-		double appleSupply = ((double)inventory[APPLE_INDEX])/((double)MAX_APPLE_STORAGE);
-		double berrySupply = ((double)inventory[BERRY_INDEX])/((double)MAX_BERRY_STORAGE);
-		int collected;
-		if(foundTree && foundBush){
-			if(appleSupply < berrySupply && appleSupply != 1) { // Less apples? pick those because you benefit more from them.
-				foundTree = false; // Set so if you fail, you will explore
-				collected = World.getInstance().pickApples(getX(), getY());
-				if(collected > 0) {
-					inventory[APPLE_INDEX] += collected;
-					if(inventory[APPLE_INDEX] > MAX_APPLE_STORAGE) inventory[APPLE_INDEX] = MAX_APPLE_STORAGE;
-					return true;
-				}
-			}
-			// Failed to pick apples or just need berries more? Pick berries.
-			collected = World.getInstance().pickBerries(getX(), getY());
-			if(collected > 0) {
-				inventory[BERRY_INDEX] += collected;
-				if(inventory[BERRY_INDEX] > MAX_BERRY_STORAGE) inventory[BERRY_INDEX] = MAX_BERRY_STORAGE;
+		
+		if(nearTree && numApples < MAX_APPLE_STORAGE){
+			int numpicked = World.getInstance().pickApples(getX(), getY());
+			if(numpicked > 0) {
+				inventory[APPLE_INDEX] += numpicked;
 				return true;
 			}
-			foundBush = false; // Set so if you fail, you will explore
+		}
+		if(nearBush && numBerries < MAX_BERRY_STORAGE){
+			int numpicked = World.getInstance().pickBerries(getX(), getY());
+			if(numpicked > 0) {
+				inventory[BERRY_INDEX] += numpicked;
+				return true;
+			}
 		}
 		
-		if(foundTree && appleSupply != 1){
-			collected = World.getInstance().pickApples(getX(), getY());
-			if(collected > 0) {
-				inventory[APPLE_INDEX] += collected;
-				if(inventory[APPLE_INDEX] > MAX_APPLE_STORAGE) inventory[APPLE_INDEX] = MAX_APPLE_STORAGE;
-				return true;
-			}
-		} else if(foundBush && berrySupply != 1){
-			collected = World.getInstance().pickBerries(getX(), getY());
-			if(collected > 0) {
-				inventory[BERRY_INDEX] += collected;
-				if(inventory[BERRY_INDEX] > MAX_BERRY_STORAGE) inventory[BERRY_INDEX] = MAX_BERRY_STORAGE;
-				return true;
-			}
+		
+		
+		
+		
+		int[] placeToGo = null;
+		if (haveSeenTree() && !nearTree && numApples < MAX_APPLE_STORAGE) {
+			placeToGo = getClosestTreeLocation();
+		} else if (haveSeenBush() && !nearBush && numBerries < MAX_BERRY_STORAGE) {
+			placeToGo = getClosestBushLocation();
 		}
-		int[] treeResults = null, bushResults = null;
-		if(haveSeenTree()){
-			treeResults = getClosestTreeLocation();
-		}
-		if(haveSeenBush()) {
-			bushResults = getClosestBushLocation();
-		}
-		if(treeResults == null && bushResults == null) {
-            System.out.println("EXPLORING");
+		
+		if(placeToGo == null){
 			explore();
-		} else if(treeResults == null){
-			seek(bushResults[0],bushResults[1]);
-		} else if(bushResults == null){
-			seek(treeResults[0],treeResults[1]);
+			return false;
 		} else {
-			if(bushResults[2] < treeResults[2]){
-				seek(bushResults[0], bushResults[1]);
-			} else {
-				seek(treeResults[0], treeResults[1]);
-			}
+			seek(placeToGo[0],placeToGo[1]);
+			return false;
 		}
 		
-		return false;
+		
+		
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//		boolean foundTree = false;
+//		boolean foundBush = false;
+//		for(int x = -1; x <= 1; x++){
+//			int xmod = x + getX();
+//			if(xmod < mapMemory.length && xmod > -1) {
+//				for(int y = -1; y <= 1; y++) {
+//					int ymod = y + getY();
+//					if(ymod < mapMemory[xmod].length && ymod > -1) {
+//						foundTree = foundTree ? foundTree : mapMemory[xmod][ymod] == World.APPLE_TREE;
+//						foundBush = foundBush ? foundBush : mapMemory[xmod][ymod] == World.BUSH;
+//					}
+//				}
+//			}
+//		}
+//		double appleSupply = ((double)inventory[APPLE_INDEX])/((double)MAX_APPLE_STORAGE);
+//		double berrySupply = ((double)inventory[BERRY_INDEX])/((double)MAX_BERRY_STORAGE);
+//		int curApples = inventory[APPLE_INDEX];
+//		int curBerries = inventory[BERRY_INDEX];
+//
+//		int collected;
+//		if(foundTree && foundBush){
+//			if(appleSupply < berrySupply && appleSupply != 1 && curApples < MAX_APPLE_STORAGE) { // Less apples? pick those because you benefit more from them.
+//				foundTree = false; // Set so if you fail, you will explore
+//				collected = World.getInstance().pickApples(getX(), getY());
+//				if(collected > 0) {
+//					inventory[APPLE_INDEX] += collected;
+//					if(inventory[APPLE_INDEX] > MAX_APPLE_STORAGE) inventory[APPLE_INDEX] = MAX_APPLE_STORAGE;
+//					return true;
+//				}
+//			}
+//			// Failed to pick apples or just need berries more? Pick berries.
+//			collected = World.getInstance().pickBerries(getX(), getY());
+//			if(collected > 0) {
+//				inventory[BERRY_INDEX] += collected;
+//				if(inventory[BERRY_INDEX] > MAX_BERRY_STORAGE) inventory[BERRY_INDEX] = MAX_BERRY_STORAGE;
+//				return true;
+//			}
+//			foundBush = false; // Set so if you fail, you will explore
+//		}
+//
+//		if(foundTree && appleSupply != 1 && curApples < MAX_APPLE_STORAGE){
+//			collected = World.getInstance().pickApples(getX(), getY());
+//			if(collected > 0) {
+//				inventory[APPLE_INDEX] += collected;
+//				if(inventory[APPLE_INDEX] > MAX_APPLE_STORAGE) inventory[APPLE_INDEX] = MAX_APPLE_STORAGE;
+//				return true;
+//			}
+//		} else if(foundBush && berrySupply != 1 && curBerries < MAX_BERRY_STORAGE){
+//			collected = World.getInstance().pickBerries(getX(), getY());
+//			if(collected > 0) {
+//				inventory[BERRY_INDEX] += collected;
+//				if(inventory[BERRY_INDEX] > MAX_BERRY_STORAGE) inventory[BERRY_INDEX] = MAX_BERRY_STORAGE;
+//				return true;
+//			}
+//		}
+//		int[] treeResults = null, bushResults = null;
+//		if(haveSeenTree()){
+//			treeResults = getClosestTreeLocation();
+//		}
+//		if(haveSeenBush()) {
+//			bushResults = getClosestBushLocation();
+//		}
+//		if(treeResults == null && bushResults == null) {
+//            System.out.println("EXPLORING");
+//			explore();
+//		} else if (treeResults == null && curBerries < MAX_BERRY_STORAGE){
+//			seek(bushResults[0],bushResults[1]);
+//		} else if (bushResults == null && curApples < MAX_APPLE_STORAGE){
+//			seek(treeResults[0],treeResults[1]);
+//		} else {
+//			if(bushResults == null || treeResults == null){
+//				explore();
+//				return false;
+//			}
+//			if(bushResults[2] < treeResults[2] && curBerries < MAX_BERRY_STORAGE){
+//				seek(bushResults[0], bushResults[1]);
+//			} else if(curApples < MAX_APPLE_STORAGE){
+//				seek(treeResults[0], treeResults[1]);
+//			} else {
+//				explore();
+//			}
+//		}
+//
+//		return false;
 	}
 	
 	protected boolean haveSeenTree(){
