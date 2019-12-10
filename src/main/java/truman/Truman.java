@@ -372,6 +372,7 @@ public abstract class Truman implements ITruman{
 			bushResults = getClosestBushLocation();
 		}
 		if(treeResults == null && bushResults == null) {
+            System.out.println("EXPLORING");
 			explore();
 		} else if(treeResults == null){
 			seek(bushResults[0],bushResults[1]);

@@ -8,7 +8,7 @@ import java.util.EnumMap;
 
 public class TrumanAI extends Truman {
 	
-	private final boolean SMART_DECISIONS = true;
+	private final boolean SMART_DECISIONS = false;
 	
 	// used for seeking
 	private int goalX = -1;
@@ -250,7 +250,7 @@ public class TrumanAI extends Truman {
 		}
 
 		if(numBerries < MAX_BERRY_STORAGE){
-			value += 3.0 * (MAX_BERRY_STORAGE - numBerries);
+			value += 1.0 * (MAX_BERRY_STORAGE - numBerries);
 		}
 		
 		
@@ -282,7 +282,8 @@ public class TrumanAI extends Truman {
 		//TODO if known amounts of the world is small, bigger value
 		//TODO if you don't know where water or food is, up the value
 		double value = 0.0;
-		
+        
+        
 		
 		return value;
 	}
@@ -319,12 +320,10 @@ public class TrumanAI extends Truman {
 //		 	setState(Acts.NO_ACTION);
 //		 }
 		
-		if(goalX == -1 || goalY == -1){
+		if(goalX <= 0 || goalY <= 0 -1){
 			setState(Acts.NO_ACTION);
 			return;
-		}
-
-        if ((xDist > 1 && goalX != getX()) || (yDist > 1 && goalY != getY())) {
+		} else if ((xDist > 1 && goalX != getX()) || (yDist > 1 && goalY != getY())) {
             explore();
         } else {
 			goalX = -1;
@@ -361,12 +360,13 @@ public class TrumanAI extends Truman {
 		int westY = currentLocationY;
 		
         int bestMove = Truman.MOVE_STAY;
-        double bestValue = Double.MIN_VALUE;
+        double bestValue = -Double.MAX_VALUE;
 		
 		// check north
 		if (northX > 0 && northX < mapSizeX && northY > 0 && northY < mapSizeY && mapMemory[northX][northY] == World.GRASS) {
             double value = Vs[northX][northY];
             if (value > bestValue) {
+                
                 bestMove = Truman.MOVE_NORTH;
 				bestValue = value;
 			}
@@ -399,6 +399,8 @@ public class TrumanAI extends Truman {
 			}
         }
         
+        System.out.println(bestValue);
+
 		switch(bestMove){
             case Truman.MOVE_NORTH:
                 System.out.println("MOVED NORTH");
@@ -437,7 +439,7 @@ public class TrumanAI extends Truman {
     private void calcAbyssValues() {
         if (calculationTimer > 0) {
             calculationTimer -= 1;
-            return;
+            // return;
         }
         
         calculationTimer = 10;
@@ -482,7 +484,7 @@ public class TrumanAI extends Truman {
         int index = -1;
         int max = Integer.MIN_VALUE;
 
-        double currVal = 25.0;
+        double currVal = 100.0;
         
         for (int quad = 0; quad < quads.length; quad++) {
             for (int i = 0; i < quads.length; i++) {
@@ -510,7 +512,7 @@ public class TrumanAI extends Truman {
                 }
 
                 quads[index] = Integer.MIN_VALUE;
-                currVal -= 5.0;
+                currVal /= 2.0;
             }
 
             index = -1;
@@ -611,41 +613,51 @@ public class TrumanAI extends Truman {
 		int westX = lastX - 1;
 		int westY = lastY;
 		
-		double bestValue = Double.MIN_VALUE;
+        double bestValue = Double.MIN_VALUE;
+        int numDir = 0;
 		
 		// check north
 		if (northX > 0 && northX < mapSizeX && northY > 0 && northY < mapSizeY && mapMemory[northX][northY] != World.ROCK) {
 			double value = getValue(northX, northY, priorResults);
-			if (value > bestValue) {
-				bestValue = value;
-			}
+			// if (value > bestValue) {
+            bestValue += value;
+            numDir += 1;
+			// }
 		}
 		
 		// check south
 		if (southX > 0 && southX < mapSizeX && southY > 0 && southY < mapSizeY && mapMemory[southX][southY] != World.ROCK) {
 			double value = getValue(southX, southY, priorResults);
-			if (value > bestValue) {
-				bestValue = value;
-			}
+			// if (value > bestValue) {
+            bestValue += value;
+            numDir += 1;
+			// }
 		}
 		
 		// check east
 		if (eastX > 0 && eastX < mapSizeX && eastY > 0 && eastY < mapSizeY && mapMemory[eastX][eastY] != World.ROCK) {
 			double value = getValue(eastX, eastY, priorResults);
-			if (value > bestValue) {
-				bestValue = value;
-			}
+			// if (value > bestValue) {
+            bestValue += value;
+            numDir += 1;
+			// }
 		}
 		
 		// check west
 		if (westX > 0 && westX < mapSizeX && westY > 0 && westY < mapSizeY && mapMemory[westX][westY] != World.ROCK) {
 			double value = getValue(westX, westY, priorResults);
-			if (value > bestValue) {
-				bestValue = value;
-			}
+			// if (value > bestValue) {
+            bestValue += value;
+            numDir += 1;
+			// }
 		}
-		
-		return bestValue;
+        
+        if (numDir != 0) {
+            return bestValue / numDir;
+        } else {
+            System.out.println("ERROR: Should NOT get here!!");
+            return 0;
+        }
 	}
 	
 	private void valueIteration() {
