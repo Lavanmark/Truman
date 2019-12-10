@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ab5d4dad-1fed-470e-a3db-26458e964221" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Truman/META-INF/Truman.kotlin_module" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/World.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/World.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/truman/TrumanAI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/truman/TrumanAI.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

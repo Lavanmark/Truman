@@ -66,7 +66,7 @@ public abstract class Truman implements ITruman{
 	// SLEEP
 	protected final int AWAKE_COST = 1;
 	protected final int SLEEP_VALUE = 5;
-	protected final int MIN_SLEEP = 2;
+	protected final int MIN_SLEEP = 6;
 	protected int sleepLength = 0;
 	protected int currentTiredness = NO_TIREDNESS;
 	

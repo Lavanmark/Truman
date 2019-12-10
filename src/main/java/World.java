@@ -250,7 +250,7 @@ public class World {
 		map[snake.x][snake.y] = SNAKE;
 	}
 	
-	private boolean isNearSnake(Truman truman){
+	public boolean isNearSnake(Truman truman){
 		if(map[truman.getX()][truman.getY()] == SNAKE){
 			return true;
 		}
