@@ -2,4 +2,9 @@
 *.class
 build/
 /.idea/
-.idea/
+/.idea/workspace.xml
+/.idea/vcs.xml
+/.idea/misc.xml
+/.idea/uiDesigner.xml
+/.idea/jarRepositories.xml
+/.idea/compiler.xml
