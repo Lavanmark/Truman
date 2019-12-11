@@ -195,8 +195,9 @@ public class TrumanAI extends Truman {
 				}
 			}
 		}
-		if(nearestSnake <= World.SNAKE_ATTACK_RANGE){
-			value /= 2;
+		
+		if(nearestSnake < MIN_SLEEP){ //if a snake is within the amount of time he has to sleep, don't risk it probably...
+			value = 0.0;
 		}
 		
 		return value;
@@ -299,18 +300,43 @@ public class TrumanAI extends Truman {
 		//TODO if you don't know where water or food is, up the value
 		double value = 0.0;
 		
-		if(!haveSeenWater()){
-			value += World.WATER_VALUE;
-		}
-		if(!haveSeenTree()){
-			value += World.APPLE_TREE_VALUE;
-		}
-		if(!haveSeenBush()){
-			value += World.BUSH_VALUE;
-		}
+//		if(!haveSeenWater()){
+//			value += World.WATER_VALUE;
+//		}
+//		if(!haveSeenTree()){
+//			value += World.APPLE_TREE_VALUE;
+//		}
+//		if(!haveSeenBush()){
+//			value += World.BUSH_VALUE;
+//		}
 		
+		double memVal = 0.0;
+		for(int x = 0; x < mapSizeX; x++){
+			for(int y = 0; y < mapSizeY; y++){
+				memVal += Math.abs(getTileValueForActionValue(mapMemory[x][y])) * (mapMemoryStrength[x][y] == 0 ? 0.0 : (1.0/((double)mapMemoryStrength[x][y])));
+			}
+		}
+		value += memVal;
 		
 		return value;
+	}
+	
+	private double getTileValueForActionValue(int tileType){
+		switch(tileType){
+			case World.APPLE_TREE:
+				return World.APPLE_TREE_VALUE;
+			case World.BUSH:
+				return World.BUSH_VALUE;
+			case World.WATER:
+				return World.WATER_VALUE;
+			case World.ABYSS:
+				return 1;
+			case World.GRASS:
+			case World.SNAKE:
+			case World.ROCK:
+				return -1.0;
+		}
+		return 0.0;
 	}
 	
 	private double runAwayActionValue() {
@@ -700,9 +726,9 @@ public class TrumanAI extends Truman {
 		// 	return discountValue * World.BUSH_VALUE + priorResults;
 		// }
 		
-		if (mapMemory[x][y] == World.ROCK) {
-			return World.ROCK_VALUE;
-		}
+//		if (mapMemory[x][y] == World.ROCK) {
+//			return World.ROCK_VALUE;
+//		}
 		
 		if (mapMemory[x][y] == World.SNAKE) {
 			return discountValue * World.SNAKE_VALUE + priorResults;
@@ -742,9 +768,9 @@ public class TrumanAI extends Truman {
 		// 	return World.BUSH_VALUE;
 		// }
 		
-		if (mapMemory[lastX][lastY] == World.ROCK) {
-			return World.ROCK_VALUE;
-		}
+//		if (mapMemory[lastX][lastY] == World.ROCK) {
+//			return World.ROCK_VALUE;
+//		}
 		
 		if (mapMemory[lastX][lastY] == World.SNAKE) {
 			return World.SNAKE_VALUE;

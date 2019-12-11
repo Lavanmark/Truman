@@ -53,13 +53,13 @@ public abstract class Truman implements ITruman{
 	
 	// HUNGER
 	protected final int HUNGER_HURT = 5;
-	protected final int HUNGER_UPDATE_TIME = 10;
+	protected final int HUNGER_UPDATE_TIME = 25;
 	protected int hungerCountdown = HUNGER_UPDATE_TIME;
 	protected int currentHunger = NO_HUNGER;
 	
 	// THIRST
 	protected final int THIRST_HURT = 2;
-	protected final int THIRST_UPDATE_TIME = 10;
+	protected final int THIRST_UPDATE_TIME = 25;
 	protected int thirstCountdown = THIRST_UPDATE_TIME;
 	protected int currentThirst = NO_THIRST;
 	

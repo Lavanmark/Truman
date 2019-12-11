@@ -42,7 +42,7 @@ public class World {
 	public static final int WATER_THIRST_VALUE = 4;
 	
 	public static final int SNAKE_BITE_VALUE = 50;
-	public static final int SNAKE_ATTACK_RANGE = 4;
+	public static final int SNAKE_ATTACK_RANGE = 3;
 	public static final int SNAKE_BITE_RANGE = 0;
 	
 	public static final int ABYSS = -1;
@@ -54,7 +54,7 @@ public class World {
 	public static final int WATER = 5;
 	
 	public static final double ABYSS_VALUE = 10;
-	public static final double GRASS_VALUE = -1.0;
+	public static final double GRASS_VALUE = 0.0;
 	public static final double APPLE_TREE_VALUE = 5.0;
 	public static final double BUSH_VALUE = 5.0;
 	public static final double ROCK_VALUE = -1.0;
@@ -174,7 +174,7 @@ public class World {
 	private void moveSnakes(Truman truman){
 		for(Point snake : snakes) {
 			int shouldMove = Math.abs(random.nextInt()%100);
-			if(shouldMove < 10){
+			if(shouldMove < 1){
 				int snakeMove = Math.abs(random.nextInt() % Truman.TOTAL_MOVES);
 				if(shouldSnakeSeekTruman(snake, truman.getX(), truman.getY())){
 					int distx = snake.x - truman.getX();
