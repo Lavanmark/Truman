@@ -336,6 +336,9 @@ public abstract class Truman implements ITruman{
 			int numpicked = World.getInstance().pickApples(getX(), getY());
 			if(numpicked > 0) {
 				inventory[APPLE_INDEX] += numpicked;
+				if(inventory[APPLE_INDEX] > MAX_APPLE_STORAGE){
+					inventory[APPLE_INDEX] = MAX_APPLE_STORAGE;
+				}
 				return true;
 			}
 		}
@@ -343,6 +346,9 @@ public abstract class Truman implements ITruman{
 			int numpicked = World.getInstance().pickBerries(getX(), getY());
 			if(numpicked > 0) {
 				inventory[BERRY_INDEX] += numpicked;
+				if(inventory[BERRY_INDEX] > MAX_BERRY_STORAGE){
+					inventory[BERRY_INDEX] = MAX_BERRY_STORAGE;
+				}
 				return true;
 			}
 		}

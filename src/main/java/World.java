@@ -60,7 +60,7 @@ public class World {
 	public static final double ROCK_VALUE = -1.0;
 	public static final double SNAKE_VALUE = -1000.0;
     public static final double WATER_VALUE = 5.0;
-    public static final double WALL_VALUE = -5.0;
+    public static final double WALL_VALUE = -10.0;
     //public static final double GOAL_VALUE = 50.0;
 	
 	public World(String mapFileLocation) throws TrumanDiedException {
@@ -76,7 +76,7 @@ public class World {
 	public int pickBerries(int trux, int truy) {
 		if(map[trux][truy] == BUSH) {
 			int berriesOnBush = berries.get(toPoint(trux,truy));
-			int berriesPicked = Math.abs(random.nextInt()%(Math.max(berriesOnBush+1,Truman.MAX_BERRY_STORAGE)));
+			int berriesPicked = Math.abs(random.nextInt()%(Math.min(berriesOnBush+1,Truman.MAX_BERRY_STORAGE)));
 			if(berriesOnBush > 0 && berriesPicked == 0) berriesPicked = 1;
 			berries.put(toPoint(trux,truy), berriesOnBush - berriesPicked);
 			return berriesPicked;
@@ -89,7 +89,7 @@ public class World {
 					if(ymod < height && ymod > -1) {
 						if(map[xmod][ymod] == BUSH){
 							int berriesOnBush = berries.get(toPoint(xmod,ymod));
-							int berriesPicked = Math.abs(random.nextInt()%(berriesOnBush+1));
+							int berriesPicked = Math.abs(random.nextInt()%(Math.min(berriesOnBush+1,Truman.MAX_BERRY_STORAGE)));
 							if(berriesOnBush > 0 && berriesPicked == 0) berriesPicked = 1;
 							berries.put(toPoint(xmod,ymod), berriesOnBush - berriesPicked);
 							return berriesPicked;
@@ -180,7 +180,9 @@ public class World {
 					int distx = snake.x - truman.getX();
 					int disty = snake.y - truman.getY();
 					
-					if(Math.abs(distx) > Math.abs(disty)){
+					
+					
+					if(Math.abs(distx) > Math.abs(disty) && canSnakeMove(distx < 0 ? 1 : -1, 0, snake)){
 						if(distx > 0){ // to the left (west)
 							snakeMove = Truman.MOVE_WEST;
 						} else if(distx < 0){ // to the right (east)

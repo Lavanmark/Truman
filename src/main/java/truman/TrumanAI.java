@@ -110,7 +110,7 @@ public class TrumanAI extends Truman {
 					actionValue = noActionValue(currentHealth, currentTiredness, currentHunger, currentThirst);
 					break;
 				case SLEEP:
-					actionValue = sleepActionValue(currentTiredness, currentHunger, currentThirst);
+					actionValue = sleepActionValue(currentTiredness, currentHunger, currentThirst, getX(), getY());
 					break;
 				case EAT:
 					actionValue = eatActionValue(currentHealth, currentHunger, inventory[APPLE_INDEX], inventory[BERRY_INDEX]);
@@ -145,6 +145,9 @@ public class TrumanAI extends Truman {
 				bestAction = action;
 			}
 		}
+		if(bestAction == Acts.SLEEP){
+			sleep();
+		}
 		setState(bestAction);
 		printActionValues(actionValues, bestAction);
 	}
@@ -173,13 +176,28 @@ public class TrumanAI extends Truman {
 		return value;
 	}
 	
-	private double sleepActionValue(int tiredness, int hunger, int thirst){
+	private double sleepActionValue(int tiredness, int hunger, int thirst, int trux, int truy){
 		double value = 0.0;
 		
 		value -= hunger;
 		value -= thirst;
 		
 		value += (((double)tiredness)/24.0) * (double)MAX_TIREDNESS;
+		
+		int nearestSnake = Integer.MAX_VALUE;
+		for(int x = 0; x < mapSizeX; x++){
+			for(int y = 0; y < mapSizeY; y++){
+				if(mapMemory[x][y] == World.SNAKE){
+					int dist = getSnakeDistance(trux,truy,x,y);
+					if(dist < nearestSnake){
+						nearestSnake = dist;
+					}
+				}
+			}
+		}
+		if(nearestSnake <= World.SNAKE_ATTACK_RANGE){
+			value /= 2;
+		}
 		
 		return value;
 	}
@@ -204,7 +222,7 @@ public class TrumanAI extends Truman {
 			value += hunger;
 		}
 		
-		return value*2;
+		return value*5;
 	}
 	
 	
@@ -224,7 +242,7 @@ public class TrumanAI extends Truman {
 		} else {
 			value += thirst;
 		}
-		return value*2;
+		return value*5;
 	}
 	
 	private double forageActionValue(int hunger, int numApples, int numBerries) {
@@ -247,7 +265,7 @@ public class TrumanAI extends Truman {
 		if(haveSeenTree()) {
 			value += 10 * World.APPLE_HUNGER_VALUE;
 			if(numApples < MAX_APPLE_STORAGE){
-				value += 5.0 * (MAX_APPLE_STORAGE - numApples);
+				value += 3.0 * (MAX_APPLE_STORAGE - numApples);
 			}
 		}
 		
@@ -264,10 +282,10 @@ public class TrumanAI extends Truman {
 		int thirstAfterDrink = thirst - (numWater * World.WATER_THIRST_VALUE);
 		
 		if(thirstAfterDrink > MAX_THIRST/5) {
-			value += thirstAfterDrink * THIRST_HURT;
+			value += thirstAfterDrink * (THIRST_HURT * 2 - 1);
 		}
 		if(haveSeenWater()){
-			value += 10 * World.WATER_THIRST_VALUE;
+			value += 15 * World.WATER_THIRST_VALUE;
 		}
 		if(numWater < MAX_WATER_STORAGE){
 			value += (10.0 * (MAX_WATER_STORAGE - numWater));
@@ -296,7 +314,7 @@ public class TrumanAI extends Truman {
 	}
 	
 	private double runAwayActionValue() {
-		if(World.getInstance().isNearSnake(this)){
+		if(thinkNearSnake(getX(), getY(), MOVE_STAY)){
 			return Double.MAX_VALUE;
 		}
 		return -Double.MAX_VALUE;
@@ -377,6 +395,10 @@ public class TrumanAI extends Truman {
 			}
 		}
 		return false;
+	}
+	
+	private int getSnakeDistance(int trux, int truy, int snakex, int snakey){
+		return Math.abs(snakex-trux)+Math.abs(snakey+truy);
 	}
 	
 	/* ******************************************************
@@ -782,7 +804,7 @@ public class TrumanAI extends Truman {
 			biggestChange = 0.0;
 			for (int y = 0; y < mapSizeY; y++) {
 				for (int x = 0; x < mapSizeX; x++) {
-					if (mapMemory[x][y] == World.ROCK || mapMemory[x][y] == World.ABYSS) {
+					if (mapMemory[x][y] == World.ABYSS) {
 						continue;
 					}
 					
