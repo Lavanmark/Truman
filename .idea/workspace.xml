@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ab5d4dad-1fed-470e-a3db-26458e964221" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/maps/world30x30_Mixed.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ProjectFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ProjectFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/TrumanProject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/TrumanProject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/World.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/World.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/WorldComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/WorldComponent.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/truman/Truman.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/truman/Truman.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/truman/TrumanAI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/truman/TrumanAI.java" afterDir="false" />
     </list>
@@ -45,10 +48,16 @@
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/maps" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/maps" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration name="TrumanProject" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
@@ -116,26 +125,34 @@
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="304" y="187" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1575933595358" />
+    <state x="653" y="241" key="#com.intellij.ide.util.MemberChooser" timestamp="1576110664865">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="653" y="241" key="#com.intellij.ide.util.MemberChooser/0.0.1680.1050@0.0.1680.1050" timestamp="1576110664865" />
     <state x="577" y="316" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1575930538685">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="577" y="316" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1575930538685" />
-    <state width="1638" height="295" key="GridCell.Tab.0.bottom" timestamp="1576028043773">
+    <state width="1638" height="295" key="GridCell.Tab.0.bottom" timestamp="1576132136548">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="295" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1576028043773" />
-    <state width="1638" height="295" key="GridCell.Tab.0.center" timestamp="1576028043772">
+    <state width="1638" height="295" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1576132136548" />
+    <state width="1638" height="295" key="GridCell.Tab.0.bottom/0.23.1680.1027@0.23.1680.1027" timestamp="1576119180855" />
+    <state width="1638" height="295" key="GridCell.Tab.0.center" timestamp="1576132136547">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="295" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1576028043772" />
-    <state width="1638" height="295" key="GridCell.Tab.0.left" timestamp="1576028043772">
+    <state width="1638" height="295" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1576132136547" />
+    <state width="1638" height="295" key="GridCell.Tab.0.center/0.23.1680.1027@0.23.1680.1027" timestamp="1576119180854" />
+    <state width="1638" height="295" key="GridCell.Tab.0.left" timestamp="1576132136547">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="295" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1576028043772" />
-    <state width="1638" height="295" key="GridCell.Tab.0.right" timestamp="1576028043773">
+    <state width="1638" height="295" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1576132136547" />
+    <state width="1638" height="295" key="GridCell.Tab.0.left/0.23.1680.1027@0.23.1680.1027" timestamp="1576119180854" />
+    <state width="1638" height="295" key="GridCell.Tab.0.right" timestamp="1576132136548">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
-    <state width="1638" height="295" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1576028043773" />
+    <state width="1638" height="295" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1576132136548" />
+    <state width="1638" height="295" key="GridCell.Tab.0.right/0.23.1680.1027@0.23.1680.1027" timestamp="1576119180855" />
     <state x="328" y="106" key="SettingsEditor" timestamp="1575933985477">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>

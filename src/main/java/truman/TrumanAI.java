@@ -3,7 +3,6 @@ package main.java.truman;
 
 import main.java.World;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 
 public class TrumanAI extends Truman {
@@ -52,53 +51,52 @@ public class TrumanAI extends Truman {
 		
 		if(SMART_DECISIONS){
 			smartDecision();
-			return;
 		}
 		
-		if(currentAction == Acts.SEEKING || (goalX != -1 && goalY != -1)){
-			setState(Acts.SEEKING);
-			return;
-		}
-		setState(Acts.EXPLORE);
-		
-		
-		double hungerRatio = ((double)currentHunger/(double)MAX_HUNGER);
-		double thristRatio = ((double)currentThirst/(double)MAX_THIRST);
-		
-		//TODO update this so if you can't find food and you're thirsty, you find water.
-		if(hungerRatio >= thristRatio && (currentHunger > MAX_HUNGER/5 ||
-				(((inventory[APPLE_INDEX] + inventory[BERRY_INDEX] < MAX_APPLE_STORAGE) ||
-						inventory[APPLE_INDEX] + inventory[BERRY_INDEX] < inventory[WATER_INDEX]) && currentThirst < MAX_THIRST/2))){
-			
-			if(currentHunger > MAX_HUNGER/5 && inventory[APPLE_INDEX]+inventory[BERRY_INDEX] > 0){
-				setState(Acts.EAT);
-			}else{
-				setState(Acts.FORAGE);
-			}
-			
-//			if(inventory[APPLE_INDEX] < MAX_APPLE_STORAGE && inventory[BERRY_INDEX] < MAX_APPLE_STORAGE){
-//				setState(Acts.FORAGE);
-//			} else {
+//		if(currentAction == Acts.SEEKING || (goalX != -1 && goalY != -1)){
+//			setState(Acts.SEEKING);
+//			return;
+//		}
+//		setState(Acts.EXPLORE);
+//
+//
+//		double hungerRatio = ((double)currentHunger/(double)MAX_HUNGER);
+//		double thristRatio = ((double)currentThirst/(double)MAX_THIRST);
+//
+//		//TODO update this so if you can't find food and you're thirsty, you find water.
+//		if(hungerRatio >= thristRatio && (currentHunger > MAX_HUNGER/5 ||
+//				(((inventory[APPLE_INDEX] + inventory[BERRY_INDEX] < MAX_APPLE_STORAGE) ||
+//						inventory[APPLE_INDEX] + inventory[BERRY_INDEX] < inventory[WATER_INDEX]) && currentThirst < MAX_THIRST/2))){
+//
+//			if(currentHunger > MAX_HUNGER/5 && inventory[APPLE_INDEX]+inventory[BERRY_INDEX] > 0){
 //				setState(Acts.EAT);
+//			}else{
+//				setState(Acts.FORAGE);
 //			}
-		} else if(currentTiredness > MAX_TIREDNESS/3){
-			sleep();
-			setState(Acts.SLEEP);
-		} else if(currentThirst > MAX_THIRST/5 || inventory[WATER_INDEX] < MAX_WATER_STORAGE){
-			if(currentThirst > MAX_THIRST/5 && inventory[WATER_INDEX] > 0){
-				setState(Acts.DRINK);
-			} else {
-				setState(Acts.COLLECT_WATER);
-			}
-			
-//			if(inventory[WATER_INDEX] < MAX_WATER_STORAGE){
-//				setState(Acts.COLLECT_WATER);
-//			} else {
+//
+////			if(inventory[APPLE_INDEX] < MAX_APPLE_STORAGE && inventory[BERRY_INDEX] < MAX_APPLE_STORAGE){
+////				setState(Acts.FORAGE);
+////			} else {
+////				setState(Acts.EAT);
+////			}
+//		} else if(currentTiredness > MAX_TIREDNESS/3){
+//			sleep();
+//			setState(Acts.SLEEP);
+//		} else if(currentThirst > MAX_THIRST/5 || inventory[WATER_INDEX] < MAX_WATER_STORAGE){
+//			if(currentThirst > MAX_THIRST/5 && inventory[WATER_INDEX] > 0){
 //				setState(Acts.DRINK);
+//			} else {
+//				setState(Acts.COLLECT_WATER);
 //			}
-		}  else if(currentVariety < MAX_VARIETY/2){
-			//setState(Acts.EXPLORE);
-		}
+//
+////			if(inventory[WATER_INDEX] < MAX_WATER_STORAGE){
+////				setState(Acts.COLLECT_WATER);
+////			} else {
+////				setState(Acts.DRINK);
+////			}
+//		}  else if(currentVariety < MAX_VARIETY/2){
+//			//setState(Acts.EXPLORE);
+//		}
 	}
 	
 	private void smartDecision(){
@@ -127,6 +125,9 @@ public class TrumanAI extends Truman {
 				case EXPLORE:
 					actionValue = exploreActionValue();
 					break;
+				case SEEKING:
+					actionValue = seekingActionValue(currentTiredness);
+					break;
 				case RUN_AWAY:
 					actionValue = runAwayActionValue();
 					break;
@@ -148,6 +149,10 @@ public class TrumanAI extends Truman {
 		if(bestAction == Acts.SLEEP){
 			sleep();
 		}
+		if(bestAction == Acts.RUN_AWAY){
+			goalY = -1;
+			goalX = -1;
+		}
 		setState(bestAction);
 		printActionValues(actionValues, bestAction);
 	}
@@ -159,6 +164,20 @@ public class TrumanAI extends Truman {
 			System.out.println(action.name() + " : " + actValues.get(action));
 		}
 		System.out.println("-- END --\n");
+	}
+	
+	private double seekingActionValue(int tiredness){
+		if(goalX < 0 || goalY < 0){
+			return -Double.MAX_VALUE;
+		} else {
+			if(tiredness < MAX_TIREDNESS/3) {
+				return Double.MAX_VALUE - 1;
+			} else if(tiredness < MAX_TIREDNESS-(MAX_TIREDNESS/3)){
+				return 200.0;
+			} else {
+				return 100.0;
+			}
+		}
 	}
 	
 	private double noActionValue(int health, int tiredness, int hunger, int thirst){
@@ -196,6 +215,7 @@ public class TrumanAI extends Truman {
 			}
 		}
 		
+		System.out.println("Nearest Snake: " + nearestSnake);
 		if(nearestSnake < MIN_SLEEP){ //if a snake is within the amount of time he has to sleep, don't risk it probably...
 			value = 0.0;
 		}
@@ -296,24 +316,31 @@ public class TrumanAI extends Truman {
 	}
 	
 	private double exploreActionValue(){
-		//TODO if known amounts of the world is small, bigger value
-		//TODO if you don't know where water or food is, up the value
 		double value = 0.0;
 		
-//		if(!haveSeenWater()){
-//			value += World.WATER_VALUE;
-//		}
-//		if(!haveSeenTree()){
-//			value += World.APPLE_TREE_VALUE;
-//		}
-//		if(!haveSeenBush()){
-//			value += World.BUSH_VALUE;
-//		}
-		
 		double memVal = 0.0;
+		boolean sawTree = false;
+		boolean sawBush = false;
+		boolean sawWater = false;
 		for(int x = 0; x < mapSizeX; x++){
 			for(int y = 0; y < mapSizeY; y++){
-				memVal += Math.abs(getTileValueForActionValue(mapMemory[x][y])) * (mapMemoryStrength[x][y] == 0 ? 0.0 : (1.0/((double)mapMemoryStrength[x][y])));
+//				if(mapMemory[x][y] == World.BUSH){
+//					if(sawBush)
+//						continue;
+//					else
+//						sawBush = true;
+//				} else if(mapMemory[x][y] == World.APPLE_TREE){
+//					if(sawTree)
+//						continue;
+//					else
+//						sawTree = true;
+//				} else if(mapMemory[x][y] == World.WATER){
+//					if(sawWater)
+//						continue;
+//					else
+//						sawWater = true;
+//				}
+				memVal += getTileValueForActionValue(mapMemory[x][y]) * (mapMemoryStrength[x][y] == 0 ? 1.0 : (1.0/((double)mapMemoryStrength[x][y])));
 			}
 		}
 		value += memVal;
@@ -324,13 +351,13 @@ public class TrumanAI extends Truman {
 	private double getTileValueForActionValue(int tileType){
 		switch(tileType){
 			case World.APPLE_TREE:
-				return World.APPLE_TREE_VALUE;
+				return -World.APPLE_TREE_VALUE;
 			case World.BUSH:
-				return World.BUSH_VALUE;
+				return -World.BUSH_VALUE;
 			case World.WATER:
-				return World.WATER_VALUE;
+				return -World.WATER_VALUE;
 			case World.ABYSS:
-				return 1;
+				return .2;
 			case World.GRASS:
 			case World.SNAKE:
 			case World.ROCK:
@@ -340,7 +367,7 @@ public class TrumanAI extends Truman {
 	}
 	
 	private double runAwayActionValue() {
-		if(thinkNearSnake(getX(), getY(), MOVE_STAY)){
+		if(thinkNearSnake(getX(), getY(), MOVE_STAY,2)){
 			return Double.MAX_VALUE;
 		}
 		return -Double.MAX_VALUE;
@@ -357,11 +384,12 @@ public class TrumanAI extends Truman {
 	
 	
 	protected void seek(int x, int y){
-		// Note: not so smart yet...
-		//TODO make this/goToLocation evaluate risks in its pathing (i.e. snakes)
+		System.out.println("Setting us up to seek!");
 		goalX = x;
 		goalY = y;
-		setState(Acts.SEEKING);
+		System.out.println("X: " + x + " Y: "+ y);
+		if(!setState(Acts.SEEKING))
+			System.err.println("NOT ALLOWED TO SET SEEK STATE");
 	}
 	
 	protected void goToGoalLocation(){
@@ -379,10 +407,13 @@ public class TrumanAI extends Truman {
 //		 }
 		
 		if(goalX < 0 && goalY < 0){
+			System.out.println("I am not going to seek");
 			setState(Acts.NO_ACTION);
 		} else if ((xDist > 1 && goalX != getX()) || (yDist > 1 && goalY != getY())) {
+			System.out.println("Doing a smart seek!");
             smartSeek();
         } else {
+			System.err.println("Clearing seek location!");
 			goalX = -1;
 			goalY = -1;
 			setState(Acts.NO_ACTION);
@@ -391,32 +422,98 @@ public class TrumanAI extends Truman {
 	
 	private void smartSeek(){
         // continue to update values that he's explored
-        // valueIteration();
+		valueIteration();
 
 		int xDist = Math.abs(goalX - getX());
 		int yDist = Math.abs(goalY - getY());
 		
 		
-		boolean snakeToRight = thinkNearSnake(getX()+1, getY(), MOVE_EAST);
-		boolean snakeToLeft = thinkNearSnake(getX()-1,getY(), MOVE_WEST);
-		boolean snakeToUp = thinkNearSnake(getX(), getY()+1, MOVE_NORTH);
-		boolean snakeToDown = thinkNearSnake(getX(), getY()-1, MOVE_SOUTH);
+		boolean snakeToRight = thinkNearSnake(getX()+1, getY(), MOVE_EAST,0);
+		boolean snakeToLeft = thinkNearSnake(getX()-1,getY(), MOVE_WEST,0);
+		boolean snakeToUp = thinkNearSnake(getX(), getY()+1, MOVE_NORTH,0);
+		boolean snakeToDown = thinkNearSnake(getX(), getY()-1, MOVE_SOUTH,0);
+		
+		
+		
+		
 		int xdir = goalX > getX() ? MOVE_EAST : MOVE_WEST;
 		int ydir = goalY > getY() ? MOVE_NORTH : MOVE_SOUTH;
-		if(xDist > 1 && goalX != getX() && xDist > yDist && ((!snakeToRight && xdir == MOVE_EAST) || (!snakeToLeft && xdir == MOVE_WEST))) {
+		if((((snakeToRight && xdir == MOVE_EAST) || (snakeToLeft && xdir == MOVE_WEST)) && xDist > yDist) || (((snakeToDown && ydir == MOVE_SOUTH) || (snakeToUp && ydir == MOVE_NORTH)) && yDist > xDist)){
+			explore();
+			return;
+		}
+		
+		if(xDist >= 1 && goalX != getX() && xDist > yDist && ((!snakeToRight && xdir == MOVE_EAST) || (!snakeToLeft && xdir == MOVE_WEST))) {
 			currentLocationX += goalX > getX() ? 1 : -1;
 		} else if(yDist >= 1 && goalY != getY() && ((!snakeToDown && ydir == MOVE_SOUTH)|| (!snakeToUp && ydir == MOVE_NORTH))) {
 			currentLocationY += goalY > getY() ? 1 : -1;
+		} else {
+			System.err.println("I DONT KNOW WHERE TO GO HELP.");
+//			boolean wasChanged = false;
+//			if(snakeToDown || snakeToUp){
+//				if(!snakeToLeft && currentLocationX-1 > -1) {
+//					currentLocationX -= 1;
+//					wasChanged = true;
+//				} else if(!snakeToRight && currentLocationX + 1 < mapSizeX) {
+//					currentLocationX += 1;
+//					wasChanged = true;
+//				}
+//			} else if(snakeToLeft || snakeToRight){
+//				if(!snakeToUp && currentLocationY + 1 < mapSizeY) {
+//					currentLocationY += 1;
+//					wasChanged = true;
+//				} else if(!snakeToDown && currentLocationY-1 > -1) {
+//					currentLocationY -= 1;
+//					wasChanged = true;
+//				}
+//			}
+//			if(!wasChanged){
+//				System.err.println("JUST GOTTA EXPLORE.");
+				explore();
+			//}
 		}
 	}
 	
-	private boolean thinkNearSnake(int trux, int truy, int dir){
-		for(int x = (dir == MOVE_EAST?0:-1); x <= (dir == MOVE_WEST?0: 1); x++){
-			for(int y = (dir == MOVE_NORTH? 0 : -1); y <= (dir == MOVE_SOUTH? 0 :1); y++) {
+	private boolean checkIfSnake(int trux, int truy, int dir) {
+		if(trux > mapSizeX-1 || trux < 0 || truy > mapSizeY-1 || mapSizeY < 0){
+			return false;
+		}
+		return mapMemory[trux][truy] == World.SNAKE;
+	}
+	
+	private boolean thinkNearSnake(int trux, int truy, int dir, int dist){
+		
+//		if(trux > mapSizeX-1 || truy > mapSizeY-1 || trux < 0 || truy < 0){
+//			return false;
+//		}
+//		if(mapMemory[trux][truy] == World.SNAKE ){
+//			return true;
+//		}
+//		if(trux+1 < mapSizeX && mapMemory[trux+1][truy] == World.SNAKE && dir != MOVE_EAST){
+//			return true;
+//		}
+//		if(trux-1 > -1 && mapMemory[trux-1][truy] == World.SNAKE && dir != MOVE_WEST){
+//			return true;
+//		}
+//		if(truy+1 < mapSizeY && mapMemory[trux][truy+1] == World.SNAKE && dir != MOVE_NORTH){
+//			return true;
+//		}
+//		if(truy-1 > -1 && mapMemory[trux][truy-1] == World.SNAKE && dir != MOVE_SOUTH){
+//			return true;
+//		}
+//		return false;
+		
+		
+		for(int x = (dir == MOVE_EAST?0:-dist); x <= (dir == MOVE_WEST?0: dist); x++){
+			for(int y = (dir == MOVE_NORTH? 0 : -dist); y <= (dir == MOVE_SOUTH? 0 :dist); y++) {
 				if(trux+x > -1 && trux+x < mapSizeX && truy+y > -1 && truy+y < mapSizeY) {
-					if(mapMemory[trux + x][truy + y] == World.SNAKE){
-						return true;
-					}
+					//if(dir == MOVE_STAY){
+						if(mapMemory[trux + x][truy+y] == World.SNAKE){
+							return true;
+						}
+//					}else if(mapMemory[trux + (y != 0  && (dir == MOVE_SOUTH || dir == MOVE_NORTH)? x : 0)][truy + (x != 0  && (dir == MOVE_EAST || dir == MOVE_WEST)? y : 0)] == World.SNAKE){
+//						return true;
+//					}
 				}
 			}
 		}
@@ -424,7 +521,7 @@ public class TrumanAI extends Truman {
 	}
 	
 	private int getSnakeDistance(int trux, int truy, int snakex, int snakey){
-		return Math.abs(snakex-trux)+Math.abs(snakey+truy);
+		return Math.abs(snakex-trux)+Math.abs(snakey-truy);
 	}
 	
 	/* ******************************************************
@@ -457,7 +554,7 @@ public class TrumanAI extends Truman {
         double bestValue = -Double.MAX_VALUE;
 		
 		// check north
-		if (northX > 0 && northX < mapSizeX && northY > 0 && northY < mapSizeY && mapMemory[northX][northY] == World.GRASS) {
+		if (northX > 0 && northX < mapSizeX && northY > 0 && northY < mapSizeY){ //&& mapMemory[northX][northY] == World.GRASS) {
             double value = Vs[northX][northY];
             if (value > bestValue) {
                 
@@ -467,7 +564,7 @@ public class TrumanAI extends Truman {
 		}
 		
 		// check south
-		if (southX > 0 && southX < mapSizeX && southY > 0 && southY < mapSizeY && mapMemory[southX][southY] == World.GRASS) {
+		if (southX > 0 && southX < mapSizeX && southY > 0 && southY < mapSizeY ){//&& mapMemory[southX][southY] == World.GRASS) {
             double value = Vs[southX][southY];
             if (value > bestValue) {
                 bestMove = Truman.MOVE_SOUTH;
@@ -476,7 +573,7 @@ public class TrumanAI extends Truman {
 		}
 		
 		// check east
-		if (eastX > 0 && eastX < mapSizeX && eastY > 0 && eastY < mapSizeY && mapMemory[eastX][eastY] == World.GRASS) {
+		if (eastX > 0 && eastX < mapSizeX && eastY > 0 && eastY < mapSizeY){ //&& mapMemory[eastX][eastY] == World.GRASS) {
             double value = Vs[eastX][eastY];
             if (value > bestValue) {
                 bestMove = Truman.MOVE_EAST;
@@ -485,7 +582,7 @@ public class TrumanAI extends Truman {
 		}
 		
 		// check west
-		if (westX > 0 && westX < mapSizeX && westY > 0 && westY < mapSizeY && mapMemory[westX][westY] == World.GRASS) {
+		if (westX > 0 && westX < mapSizeX && westY > 0 && westY < mapSizeY){// && mapMemory[westX][westY] == World.GRASS) {
             double value = Vs[westX][westY];
             if (value  > bestValue) {
                 bestMove = Truman.MOVE_WEST;
@@ -681,6 +778,9 @@ public class TrumanAI extends Truman {
 
 	private double getValue(int x, int y, double priorResults) {
         if (x < 0 || x >= mapSizeX || y < 0 || y >= mapSizeY) {
+        	if((x < 0 || x >= mapSizeX) && (y < 0 || y >= mapSizeY)) {
+		        return World.WALL_VALUE * 2;
+	        }
             return World.WALL_VALUE;
         }
         
@@ -690,11 +790,11 @@ public class TrumanAI extends Truman {
         //     discountValue *= -1.0;
         // }
         
-//        if (x == goalX && y == goalY) {
-//            return World.GOAL_VALUE;
-//        }
+        if (x == goalX && y == goalY && currentAction == Acts.SEEKING) {
+            return World.GOAL_VALUE;
+        }
 		
-		if (mapMemory[x][y] == World.ABYSS) {
+		if (mapMemory[x][y] == World.ABYSS && currentAction == Acts.EXPLORE) {
             // return discountValue * World.ABYSS_VALUE + priorResults;
             return discountValue * getAbyssValue(x, y) + priorResults;
 		}
@@ -756,9 +856,9 @@ public class TrumanAI extends Truman {
             }
         }
 
-//        if (lastX == goalX && lastY == goalY) {
-//            return World.GOAL_VALUE;
-//        }
+        if (lastX == goalX && lastY == goalY && currentAction == Acts.SEEKING) {
+            return World.GOAL_VALUE;
+        }
 		
 		// if (mapMemory[lastX][lastY] == World.APPLE_TREE) {
 		// 	return World.APPLE_TREE_VALUE;

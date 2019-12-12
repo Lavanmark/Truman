@@ -55,13 +55,13 @@ public class World {
 	
 	public static final double ABYSS_VALUE = 10;
 	public static final double GRASS_VALUE = 0.0;
-	public static final double APPLE_TREE_VALUE = 5.0;
-	public static final double BUSH_VALUE = 5.0;
+	public static final double APPLE_TREE_VALUE = 50.0;
+	public static final double BUSH_VALUE = 50.0;
 	public static final double ROCK_VALUE = -1.0;
 	public static final double SNAKE_VALUE = -1000.0;
-    public static final double WATER_VALUE = 5.0;
-    public static final double WALL_VALUE = -10.0;
-    //public static final double GOAL_VALUE = 50.0;
+    public static final double WATER_VALUE = 50.0;
+    public static final double WALL_VALUE = -20.0;
+    public static final double GOAL_VALUE = 200.0;
 	
 	public World(String mapFileLocation) throws TrumanDiedException {
 		boolean imported = importMap(mapFileLocation);
@@ -76,7 +76,7 @@ public class World {
 	public int pickBerries(int trux, int truy) {
 		if(map[trux][truy] == BUSH) {
 			int berriesOnBush = berries.get(toPoint(trux,truy));
-			int berriesPicked = Math.abs(random.nextInt()%(Math.min(berriesOnBush+1,Truman.MAX_BERRY_STORAGE)));
+			int berriesPicked = random.nextInt(Math.min(berriesOnBush+1, Truman.MAX_BERRY_STORAGE));
 			if(berriesOnBush > 0 && berriesPicked == 0) berriesPicked = 1;
 			berries.put(toPoint(trux,truy), berriesOnBush - berriesPicked);
 			return berriesPicked;
@@ -89,7 +89,7 @@ public class World {
 					if(ymod < height && ymod > -1) {
 						if(map[xmod][ymod] == BUSH){
 							int berriesOnBush = berries.get(toPoint(xmod,ymod));
-							int berriesPicked = Math.abs(random.nextInt()%(Math.min(berriesOnBush+1,Truman.MAX_BERRY_STORAGE)));
+							int berriesPicked = random.nextInt(Math.min(berriesOnBush+1, Truman.MAX_BERRY_STORAGE));
 							if(berriesOnBush > 0 && berriesPicked == 0) berriesPicked = 1;
 							berries.put(toPoint(xmod,ymod), berriesOnBush - berriesPicked);
 							return berriesPicked;
@@ -155,12 +155,12 @@ public class World {
 	}
 	
 	public void update(Truman truman) throws TrumanDiedException {
-		int shouldGrow = Math.abs(random.nextInt()%100);
+		int shouldGrow = random.nextInt(100);
 		if(shouldGrow < 33){
 			grow();
 		}
 		if(isNearSnake(truman)){
-			int biteChance = Math.abs(random.nextInt()%100);
+			int biteChance = random.nextInt(100);
 			if(biteChance > 50){
 				truman.snakeBite();
 			}
@@ -173,9 +173,9 @@ public class World {
 	
 	private void moveSnakes(Truman truman){
 		for(Point snake : snakes) {
-			int shouldMove = Math.abs(random.nextInt()%100);
+			int shouldMove = random.nextInt(100);
 			if(shouldMove < 1){
-				int snakeMove = Math.abs(random.nextInt() % Truman.TOTAL_MOVES);
+				int snakeMove = random.nextInt(Truman.TOTAL_MOVES);
 				if(shouldSnakeSeekTruman(snake, truman.getX(), truman.getY())){
 					int distx = snake.x - truman.getX();
 					int disty = snake.y - truman.getY();

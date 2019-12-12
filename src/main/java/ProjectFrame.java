@@ -23,33 +23,35 @@ public class ProjectFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, width, height + bar + 100);
 		truman = new TrumanAI(World.getInstance().width, World.getInstance().height);
-		myWorldComponent = new WorldComponent(width, height, truman);
+		myWorldComponent = new WorldComponent(width, height, actionDelay, truman);
 		getContentPane().add(myWorldComponent);
 		
 		
 		setVisible(true);
 		setTitle("The Truman Project");
 		
-		doStuff(actionDelay);
+		doStuff();
 	}
 	
-	private void doStuff(int actionDelay) {
+	private void doStuff() {
 		try {
 			while(truman.getCurrentAge() <= Truman.AGE_OF_MAN) {
-				truman.growOlder();
-				truman.updateMemory();
-				World.getInstance().update(truman);
-				truman.makeDecision();
-				truman.update();
-				truman.expressThoughts();
+				if(!myWorldComponent.pauseSimulation) {
+					truman.growOlder();
+					truman.updateMemory();
+					World.getInstance().update(truman);
+					truman.makeDecision();
+					truman.update();
+					truman.expressThoughts();
+				}
 				myWorldComponent.repaint();
 				try {
-					Thread.sleep(actionDelay);
+					Thread.sleep(myWorldComponent.delay);
 				} catch(InterruptedException e) {
 					Thread.currentThread().interrupt();
 				}
 			}
-			if(truman.getCurrentAge() >= Truman.AGE_OF_MAN){
+			if(truman.getCurrentAge() >= Truman.AGE_OF_MAN) {
 				myWorldComponent.setOldManWin();
 				myWorldComponent.repaint();
 			}

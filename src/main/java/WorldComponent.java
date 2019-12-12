@@ -4,9 +4,17 @@ import main.java.truman.Truman;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class WorldComponent extends JComponent {
+public class WorldComponent extends JComponent implements KeyListener {
 	
+	public int delay = 0;
+	private final int MAX_DELAY = 500;
+	private final int MIN_DELAY = 0;
+	private final int DELAY_MOD = 10;
+	
+	public boolean pauseSimulation = false;
 	private int winWidth, winHeight;
 	private double sqrWdth, sqrHght;
 	private Color grey = new Color(170, 170, 170, 100);
@@ -17,13 +25,17 @@ public class WorldComponent extends JComponent {
 	
 	private int gameState = 0; //Alive = 0, Dead = 1
 	
-	public WorldComponent(int windowWidth, int windowHeight, Truman truman){
+	public WorldComponent(int windowWidth, int windowHeight, int actionDelay, Truman truman){
 		trumanPointer = truman;
 		winWidth = windowWidth;
 		winHeight = windowHeight;
+		delay = actionDelay;
 		
 		sqrWdth = (double) windowWidth / World.getInstance().width;
 		sqrHght = (double) windowHeight / World.getInstance().height;
+		
+		addKeyListener(this);
+		requestFocus();
 	}
 	
 	public void addNotify() {
@@ -94,7 +106,7 @@ public class WorldComponent extends JComponent {
         // draw value iteration heat map
 
         if (showValueIteration) {
-            double maxVal = -99999, minVal = 99999;
+            double maxVal = -99999.0, minVal = 99999.0;
             double[][] vals = trumanPointer.getValueIterationData();
 
             for (int y = 0; y < world.height; y++) {
@@ -110,6 +122,7 @@ public class WorldComponent extends JComponent {
 
             if (minVal == maxVal) {
                 maxVal = minVal + 1;
+                System.err.println("MIN MAX WERE THE SAME");
             }
 
             for (int y = 0; y < world.height; y++) {
@@ -121,11 +134,15 @@ public class WorldComponent extends JComponent {
                     int tlx = (int)(x * sqrWdth);
                     int tly = (int) (((world.height-1) - y) * sqrHght);
 
-                    int col = (int) (255 * (vals[x][y] - minVal) / (maxVal - minVal));
-                    if (col > 255) {
-                        col = 255;
-                    }
-                    col /= 3; // reduce overall heat map transparency
+                    int col = (int) (255.0 * ((vals[x][y] - minVal) / (maxVal - minVal)));
+	                if (col > 255) {
+		                col = 255;
+	                }
+	                col /= 3; // reduce overall heat map transparency
+	                if(col < 0){
+		                col = 0;
+	                }
+	                
                     g.setColor(new Color(0, 0, 255, col));
                     g.fillRect(tlx, tly, (int) sqrWdth, (int) sqrHght);
                 }
@@ -167,6 +184,7 @@ public class WorldComponent extends JComponent {
 		g.setColor(Color.BLACK);
 		g.drawString("Year: " + year + " Day: " + day + " Hour: " + hour, 320, 515);
 		g.drawString("Time Step: " + trumanPointer.getCurrentAge(), 380, 530);
+		g.drawString("Action Delay: " + delay, 360, 545);
 		
 		String actionString = "Nothing.";
 		switch(trumanPointer.getCurrentAction()){
@@ -204,6 +222,13 @@ public class WorldComponent extends JComponent {
 		g.setColor(Color.BLACK);
 		g.drawString(actionString, 5, 515);
 		
+		if(pauseSimulation){
+			g.setColor(Color.RED);
+			g.drawString("PAUSED", 150, 515);
+		}
+		
+		g.setColor(Color.BLACK);
+		
 		// LEFT side
 		g.drawString("Health: "+ trumanPointer.getCurrentHealth(), 5,565);
 		g.drawString("Hunger: "+ trumanPointer.getCurrentHunger(), 5,580);
@@ -228,4 +253,35 @@ public class WorldComponent extends JComponent {
 		}
 	}
 	
+	@Override
+	public void keyTyped(KeyEvent keyEvent) {
+	
+	}
+	
+	@Override
+	public void keyPressed(KeyEvent keyEvent) {
+	
+	}
+	
+	@Override
+	public void keyReleased(KeyEvent keyEvent) {
+		if(keyEvent.getKeyCode() == KeyEvent.VK_SPACE){
+			pauseSimulation = !pauseSimulation;
+		}
+		if(keyEvent.getKeyCode() == KeyEvent.VK_R){
+			repaint();
+		}
+		if(keyEvent.getKeyCode() == KeyEvent.VK_EQUALS){
+			delay += DELAY_MOD;
+			if(delay > MAX_DELAY){
+				delay = MAX_DELAY;
+			}
+		}
+		if(keyEvent.getKeyCode() == KeyEvent.VK_MINUS){
+			delay -= DELAY_MOD;
+			if(delay < MIN_DELAY){
+				delay = MIN_DELAY;
+			}
+		}
+	}
 }

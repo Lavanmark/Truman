@@ -21,7 +21,7 @@ public class TrumanProject {
 	}
 	
 	public TrumanProject(){
-		this("world30x30.txt", 0);
+		this("world30x30_Mixed.txt", 10);
 	}
 	
 	public static void main(String[] args){

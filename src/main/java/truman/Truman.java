@@ -66,7 +66,7 @@ public abstract class Truman implements ITruman{
 	// SLEEP
 	protected final int AWAKE_COST = 1;
 	protected final int SLEEP_VALUE = 5;
-	protected final int MIN_SLEEP = 6;
+	protected final int MIN_SLEEP = 4;
 	protected int sleepLength = 0;
 	protected int currentTiredness = NO_TIREDNESS;
 	
@@ -134,7 +134,7 @@ public abstract class Truman implements ITruman{
 		if(currentAction == nextAction){
 			//currentVariety--;
 		} else {
-			int varietyBoost = Math.abs(random.nextInt()%MAX_VARIETY_BOOST); //TODO maybe fix this up...
+			int varietyBoost = random.nextInt(MAX_VARIETY_BOOST); //TODO maybe fix this up...
 			currentVariety += Math.max(varietyBoost, MIN_VARIETY_BOOST);
 			if(currentVariety > MAX_VARIETY){
 				currentVariety = MAX_VARIETY;
@@ -219,7 +219,7 @@ public abstract class Truman implements ITruman{
 	}
 	
 	public void updateMemory() {
-		int memloss = Math.abs(random.nextInt()%100);
+		int memloss = random.nextInt(100);
 		if(memloss < MEMORY_LOSS_CHANCE){
 			for(int x = 0; x < mapMemoryStrength.length; x++){
 				for(int y = 0; y < mapMemoryStrength[x].length; y++){
@@ -502,6 +502,10 @@ public abstract class Truman implements ITruman{
 			for(int y = 0; y < mapMemory[x].length; y++){
 				if(mapMemory[x][y] == World.APPLE_TREE){
 					double dist = Math.sqrt(Math.pow(x-getX(), 2) + Math.pow(y - getY(), 2));
+					int distfromsnake = closestSnakeFromLocation(x,y);
+					if(distfromsnake <= 10) {
+						dist += 20.0/(double)distfromsnake;
+					}
 					if(Math.abs(dist) < Math.abs(closeDistance)){
 						closeX = x;
 						closeY = y;
@@ -525,6 +529,10 @@ public abstract class Truman implements ITruman{
 			for(int y = 0; y < mapMemory[x].length; y++){
 				if(mapMemory[x][y] == World.BUSH){
 					double dist = Math.sqrt(Math.pow(x-getX(), 2) + Math.pow(y - getY(), 2));
+					int distfromsnake = closestSnakeFromLocation(x,y);
+					if(distfromsnake <= 10) {
+						dist += 10.0/(double)distfromsnake;
+					}
 					if(Math.abs(dist) < Math.abs(closeDistance)){
 						closeX = x;
 						closeY = y;
@@ -604,6 +612,10 @@ public abstract class Truman implements ITruman{
 				if(mapMemory[x][y] == World.WATER){
 					//double dist = Math.sqrt(Math.pow(x-getX(), 2) + Math.pow(y - getY(), 2));
 					double dist = Math.abs(x-getX()) + Math.abs(y-getY());
+					int distfromsnake = closestSnakeFromLocation(x,y);
+					if(distfromsnake <= 10) {
+						dist += 10.0/(double)distfromsnake;
+					}
 					if(Math.abs(dist) < Math.abs(closeDistance)){
 						closeX = x;
 						closeY = y;
@@ -616,6 +628,21 @@ public abstract class Truman implements ITruman{
 		result[0] = closeX;
 		result[1] = closeY;
 		return result;
+	}
+	
+	private int closestSnakeFromLocation(int atx, int aty){
+		int nearestSnake = Integer.MAX_VALUE;
+		for(int x = 0; x < mapSizeX; x++){
+			for(int y = 0; y < mapSizeY; y++){
+				if(mapMemory[x][y] == World.SNAKE){
+					int dist = Math.abs(x-atx) + Math.abs(y-aty);
+					if(dist < nearestSnake){
+						nearestSnake = dist;
+					}
+				}
+			}
+		}
+		return nearestSnake;
 	}
 	
 	
@@ -676,7 +703,7 @@ public abstract class Truman implements ITruman{
 	
 	@Override
 	public boolean sleep() {
-		int sleepFor = Math.max(Math.abs(random.nextInt()%11), MIN_SLEEP); // Max 8 hours of sleep
+		int sleepFor = Math.max(random.nextInt(11), MIN_SLEEP); // Max 11 hours of sleep
 		if(currentTiredness >= MAX_TIREDNESS){
 			sleepFor = currentTiredness/SLEEP_VALUE;
 		}
@@ -737,6 +764,11 @@ public abstract class Truman implements ITruman{
 	
 	@Override
 	public void snakeBite() throws TrumanDiedException {
+		if(currentAction == Acts.SLEEP){
+			System.err.println("WAKE HIM UP BEFORE HE DIES.");
+			currentAction = Acts.RUN_AWAY;
+			nextAction = Acts.RUN_AWAY;
+		}
 		currentHealth -= World.SNAKE_BITE_VALUE;
 		if(checkDead()){
 			throw new TrumanDiedException("Truman died of a snake bite.");
